@@ -92,10 +92,7 @@
         .btn:hover {
             background: #0056b3;
         }
-        .feedback {
-            margin-top: 10px;
-            font-weight: bold;
-        }
+    
         .correct {
             color: green;
         }
@@ -121,6 +118,11 @@
             color: green;
             font-weight: bold;
         }
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -128,7 +130,9 @@
         <div id="quiz"></div>
         <div class="bottom-buttons">
             <button id="prev-btn" class="btn">Zurück</button>
-            <button id="next-btn" class="btn">Weiter</button>
+            <button id="next-btn" class="btn">Lösung Prüfen</button>
+            <button id="finished" class="btn">Fertig</button>
+            <button id="introWeiter" class="btn">Weiter</button>
         </div>
         <div id="finish-screen" class="finish-screen">
             <h2></h2>
@@ -142,6 +146,31 @@
 
         const intro = data["intro"];
         const questions = data["questions"];
+        const finalText = data["finalText"];
+        const falseCounter = {};
+        // const correctCounter = {};
+
+        //for all questions set it to false
+
+        // Store a record of questions answered correctly in localStorage or initialize as an empty object
+const questionsAnsweredCorrect = JSON.parse(localStorage.getItem("questionsAnsweredCorrect")) || {};
+
+// Iterate over all questions to mark them as unanswered initially and store them in localStorage
+questions.forEach((question, index) => {
+    if (!questionsAnsweredCorrect.hasOwnProperty(index)) {
+        questionsAnsweredCorrect[index] = false; // False implies unanswered or incorrect
+    }
+});
+
+// Whenever a user answers a question correctly or incorrectly, update the status
+function updateAnswerStatus(questionIndex, isCorrect) {
+
+    console.log('questionIndex', questionIndex , 'isCorrect', isCorrect);
+    questionsAnsweredCorrect[questionIndex] = isCorrect;
+    
+    // Save the updated status to localStorage
+    localStorage.setItem("questionsAnsweredCorrect", JSON.stringify(questionsAnsweredCorrect));
+}
 
 
 
@@ -151,24 +180,37 @@
         const finishScreen = document.getElementById('finish-screen');
         let currentQuestionIndex = 0;
         const answers = [];
+        let currentInput = '';
+
+        const finishedBtn = document.getElementById('finished');
+        finishedBtn.style.display = 'none';
+
+
         function updateInputBlocks(value, answer, inputContainer) {
             inputContainer.innerHTML = '';
             for (let i = 0; i < answer.length; i++) {
                 const block = document.createElement('span');
+                
+                // const currentChar = value[i] || '';
+
                 block.textContent = value[i] || '';
-                if (value[i]?.toLowerCase() === answer[i].toLowerCase()) {
-                    block.classList.add('correct');
-                } else if (value[i] && value[i].toLowerCase() !== answer[i].toLowerCase()) {
-                    block.classList.add('incorrect');
-                }
+                // currentInput += currentChar;
+
+                // if (value[i]?.toLowerCase() === answer[i].toLowerCase()) {
+                //     block.classList.add('correct');
+                // } else if (value[i] && value[i].toLowerCase() !== answer[i].toLowerCase()) {
+                //     block.classList.add('incorrect');
+                // }
                 if (i === value.length) {
                     block.classList.add('currentBlock');
                 }
                 inputContainer.appendChild(block);
+
             }
         }
         function handleInputEvent(input, question, inputContainer, feedback) {
             const value = input.value;
+            currentInput = input.value;
             if (value.length > question.answer.length) {
                 input.value = value.slice(0, question.answer.length);
             }
@@ -213,6 +255,10 @@
             questionDiv.appendChild(feedback);
             quizContainer.appendChild(questionDiv);
             input.dispatchEvent(new Event('input'));
+
+
+            console.log('currentQuestionIndex', currentQuestionIndex);
+
             if (currentQuestionIndex === 0) {
                 prevButton.style.visibility = 'hidden';
             } else {
@@ -226,28 +272,85 @@
             }
         }
         function showFinishButton() {
-            const allCorrect = questions.every((question, index) => {
-                const userAnswer = localStorage.getItem('input' + index);
-                return userAnswer && userAnswer.trim().toLowerCase() === question.answer.toLowerCase();
+
+
+            finishedBtn.style.display = 'block';
+            finishedBtn.addEventListener('click', () => {
+                // finishScreen.style.display = 'block';
+
+
+                const loesungswortBuchstaben = "XYZ"
+
+                const countHowManyCorrect = Object.values(questionsAnsweredCorrect).filter(Boolean).length;
+                const countHowManyTotal = questions.length;
+
+                const text = countHowManyCorrect +"/"+ countHowManyTotal;
+
+
+                const realFinalText = finalText.replace("[REPLACE_1]",text)
+                // const realFinalText = finalText.replace("[REPLACE_1]",text ).replace("[REPLACE_2]", loesungswortBuchstaben);
+
+
+                quizContainer.innerHTML = realFinalText;
+
+
+
+
+                nextButton.style.display = 'none';
+                prevButton.style.display = 'none';
+                finishedBtn.style.display = 'none';
+
             });
-            if (allCorrect) {
-                const finishButton = document.createElement('button');
-                finishButton.classList.add('btn');
-                finishButton.textContent = 'Finish';
-                finishButton.addEventListener('click', () => {
-                    finishScreen.style.display = 'block';
-                    quizContainer.style.display = 'none';
-                });
-                quizContainer.appendChild(finishButton);
-            }
         }
-        nextButton.addEventListener('click', () => {
+
+        function loadNextQuestion(){
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 loadQuestion(currentQuestionIndex);
             } else {
                 alert('You have completed the quiz!');
             }
+        }
+
+
+        function addFalseCounter(currentQuestionIndex){
+            falseCounter[currentQuestionIndex] = falseCounter[currentQuestionIndex] ? falseCounter[currentQuestionIndex] + 1 : 1;
+
+            console.log('falseCounter', falseCounter);
+        }
+        function getFalseCounter(){
+            return falseCounter[currentQuestionIndex] || 0;
+        }
+
+        nextButton.addEventListener('click', () => {
+
+            const isCorrect = currentInput.trim().toLowerCase() === questions[currentQuestionIndex].answer.toLowerCase();
+
+
+            updateAnswerStatus(currentQuestionIndex, isCorrect);
+
+            //check if input is correct
+            if (isCorrect) {
+                console.log('correct');
+        
+                loadNextQuestion();
+            } else {
+                console.log('incorrect');
+
+                const feedback = document.querySelector('.feedback');
+                feedback.textContent = 'Falsche Antwort. Versuche es noch einmal.';
+
+                addFalseCounter(currentQuestionIndex);
+                const falseCounter = getFalseCounter();
+                
+                if (falseCounter >= 3) {
+                   loadNextQuestion();
+                }
+            }
+            
+
+
+          
         });
         prevButton.addEventListener('click', () => {
             if (currentQuestionIndex > 0) {
@@ -255,7 +358,29 @@
                 loadQuestion(currentQuestionIndex);
             }
         });
+        // loadQuestion(currentQuestionIndex);
+
+
+
+
+        function loadIntro() {
+    quizContainer.innerHTML = intro;
+    // quizContainer.appendChild(centerDiv);
+
+    nextButton.style.display = 'none';
+    prevButton.style.visibility = 'hidden';
+
+    introWeiter.addEventListener('click', () => {
         loadQuestion(currentQuestionIndex);
+        nextButton.style.display = 'block';
+        introWeiter.style.display = 'none';
+        // prevButton.style.visibility = 'visible';
+    });
+}
+
+loadIntro();
+
+
     </script>
 </body>
 </html>

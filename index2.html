@@ -1,19 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link rel="icon" type="image/x-icon" href="icon.ico">
-     <script src="data.js"></script>
+    <link rel="icon" type="image/x-icon" href="icon.ico">
+    <script src="data.js"></script>
     <title>THD Campus Treasure Hunt</title>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DW1EF1FQP8"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-DW1EF1FQP8');
-</script>`
-    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DW1EF1FQP8"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-DW1EF1FQP8');
+    </script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -100,6 +99,7 @@
             color: green;
         }
         .incorrect {
+            color: red;
         }
         .text-input {
             position: absolute;
@@ -135,22 +135,15 @@
         </div>
     </div>
     <script>
-
-        //zahlen 
-
-        // fülle alles aus 
-
         const intro = data["intro"];
         const questions = data["questions"];
-
-
-
         const quizContainer = document.getElementById('quiz');
         const nextButton = document.getElementById('next-btn');
         const prevButton = document.getElementById('prev-btn');
         const finishScreen = document.getElementById('finish-screen');
         let currentQuestionIndex = 0;
         const answers = [];
+        const correctAnswers = [];
         function updateInputBlocks(value, answer, inputContainer) {
             inputContainer.innerHTML = '';
             for (let i = 0; i < answer.length; i++) {
@@ -158,6 +151,7 @@
                 block.textContent = value[i] || '';
                 if (value[i]?.toLowerCase() === answer[i].toLowerCase()) {
                     block.classList.add('correct');
+                    correctAnswers[i] = answer[i].toUpperCase();
                 } else if (value[i] && value[i].toLowerCase() !== answer[i].toLowerCase()) {
                     block.classList.add('incorrect');
                 }
@@ -219,34 +213,33 @@
                 prevButton.style.visibility = 'visible';
             }
             if (currentQuestionIndex === questions.length - 1) {
-                nextButton.style.visibility = 'hidden';
-                showFinishButton();
+                nextButton.textContent = 'Lösungswort prüfen';
+                nextButton.addEventListener('click', checkSolution);
             } else {
                 nextButton.style.visibility = 'visible';
+                nextButton.textContent = 'Weiter';
             }
         }
-        function showFinishButton() {
-            const allCorrect = questions.every((question, index) => {
+        function checkSolution() {
+            let correctCount = 0;
+            let solutionWord = '';
+            questions.forEach((question, index) => {
                 const userAnswer = localStorage.getItem('input' + index);
-                return userAnswer && userAnswer.trim().toLowerCase() === question.answer.toLowerCase();
+                if (userAnswer && userAnswer.trim().toLowerCase() === question.answer.toLowerCase()) {
+                    correctCount++;
+                    solutionWord += correctAnswers[index] || '';
+                }
             });
-            if (allCorrect) {
-                const finishButton = document.createElement('button');
-                finishButton.classList.add('btn');
-                finishButton.textContent = 'Finish';
-                finishButton.addEventListener('click', () => {
-                    finishScreen.style.display = 'block';
-                    quizContainer.style.display = 'none';
-                });
-                quizContainer.appendChild(finishButton);
-            }
+            finishScreen.style.display = 'block';
+            quizContainer.style.display = 'none';
+            finishScreen.innerHTML = `Herzlichen Glückwunsch! Du hast ${correctCount}/${questions.length} Fragen richtig beantwortet.<br>Folgende Buchstaben hast du für das Lösungswort freigeschaltet: ${solutionWord}<br>Bringe die Buchstaben in die richtige Reihenfolge. Wie lautet dein Lösungswort?`;
         }
         nextButton.addEventListener('click', () => {
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 loadQuestion(currentQuestionIndex);
             } else {
-                alert('You have completed the quiz!');
+                alert('Du hast das Quiz beendet!');
             }
         });
         prevButton.addEventListener('click', () => {

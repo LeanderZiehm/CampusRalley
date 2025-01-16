@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Rallye</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .question h2 {
+            font-size: 1.5em;
+            color: #333;
+        }
+        .answer-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+        .btn {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1em;
+        }
+        .btn:hover {
+            background-color: #218838;
+        }
+        .feedback {
+            font-size: 1.2em;
+            color: #007bff;
+        }
+        .wrong-feedback {
+            color: #dc3545;
+        }
+        .hidden {
+            display: none;
+        }
+        .result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Herzlich Willkommen bei unserer Campusralley!</h1>
+    <p>Schön, dass du dabei bist. Es erwarten dich 15 Fragen, die dich über unseren Campus führen. Aus deinen Antworten ergibt sich ein Lösungwort.</p>
+    <div class="question">
+        <h2>Frage 1:</h2>
+        <p>Ich stehe Mitten auf dem Campus. Ich bin kein Gebäude, aber trotzdem stabil. Wenn du hoch hinaus willst, steigst du auf mich.</p>
+        <input type="text" id="answer1" class="answer-input" placeholder="Antwort hier eingeben">
+        <button class="btn" onclick="checkAnswer(1)">Lösungswort prüfen</button>
+        <p id="feedback1" class="feedback hidden"></p>
+    </div>
+    <div class="question">
+        <h2>Frage 2:</h2>
+        <p>Ich bin ein Gebäude, in dem es meistens leise ist. Wenn ihr lernen müsst, braucht ihr das, was in mir wohnt. Gehe in das Gebäude. Dort befindet sich ein Wasserspender. Welche Nummer steht darauf? Schreibe die Zahl aus!</p>
+        <input type="text" id="answer2" class="answer-input" placeholder="Antwort hier eingeben">
+        <button class="btn" onclick="checkAnswer(2)">Lösungswort prüfen</button>
+        <p id="feedback2" class="feedback hidden"></p>
+    </div>
+    <div class="result">
+        <h2>Endergebnis:</h2>
+        <p id="final-feedback" class="feedback hidden"></p>
+        <p id="solution-word" class="feedback hidden"></p>
+    </div>
+</div>
+<script>
+    let correctAnswers = {
+        1: "treppe",
+        2: "sechsundsechzig",
+        3: "eidechse",
+        4: "fünf",
+        5: "rennauto",
+        6: "josef",
+        7: "campusstore",
+        8: "j",
+        9: "mensa",
+        10: "copyshop",
+        11: "zehn"
+    };
+    let userAnswers = [];
+    let solutionLetters = [];
+    function checkAnswer(questionNumber) {
+        let answerInput = document.getElementById('answer' + questionNumber).value.trim().toLowerCase();
+        let feedbackElement = document.getElementById('feedback' + questionNumber);
+        if (answerInput === correctAnswers[questionNumber]) {
+            feedbackElement.textContent = "Richtig!";
+            feedbackElement.classList.remove('hidden');
+            userAnswers.push(answerInput);
+            solutionLetters.push(answerInput.charAt(0).toUpperCase());
+        } else {
+            feedbackElement.textContent = "Leider falsch. Probiere es nochmal";
+            feedbackElement.classList.add('wrong-feedback');
+            feedbackElement.classList.remove('hidden');
+        }
+        // After answering, update the solution word
+        updateSolutionWord();
+    }
+    function updateSolutionWord() {
+        if (userAnswers.length === Object.keys(correctAnswers).length) {
+            let solution = solutionLetters.join('');
+            document.getElementById('final-feedback').textContent = "Herzlichen Glückwunsch! Du hast alle Fragen beantwortet!";
+            document.getElementById('solution-word').textContent = "Lösungswort: " + solution;
+            document.getElementById('final-feedback').classList.remove('hidden');
+            document.getElementById('solution-word').classList.remove('hidden');
+        }
+    }
+</script>
+</body>
+</html>
