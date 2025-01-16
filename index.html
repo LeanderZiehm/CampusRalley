@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
      <link rel="icon" type="image/x-icon" href="icon.ico">
+     <!-- <script src="questions.js"></script> -->
+     <script src="data.js"></script>
+     <script src="g.js"></script>
     <title>THD Campus Treasure Hunt</title>
     <style>
         body {
@@ -131,17 +134,10 @@
 
         // fülle alles aus 
 
-        const questions = [
-            { text: "Ich stehe Mitten auf dem Campus. Ich bin kein Gebäude, aber trotzdem stabil. Wenn du hoch hinaus willst, steigst du auf mich.", answer: "Campustreppe" },
-            { text: "Dort, wo ihr jetzt steht, könnt ihr mich nicht sehen. Ich bin ein Haus, in dem es meistens leise ist. Wenn ihr lernen müsst, braucht ihr das, was in mir wohnt. Man nennt mich auch BIBB.", answer: "Bibliothek" },
-            { text: "Suche die richtige Fakultät! An dieser Fakultät sammelst du viel Praxiserfahrung. Ohne meine Studiengänge bzw. ohne die Menschen, die sowas lernen, gäbe es keine Bauwerke. Welche Gebäude nummer hat es?", answer: "D" },
-            { text: "In diesem Gebäude hängt ein großes Pendel von der Decke. Man geht hinein und sieht es gleich.", answer: "L" },
-            { text: "Auf dem Neucampus befinden sich Sitzgelegenheiten/Liegen in unterschiedlichen Farben. Wie viele sind es insgesamt?", answer: "28" },
-            { text: "In welchem Gebäude befindet sich der Terminal, an dem die Studierenden den Studentenausweis aufladen können.", answer: "B" },
-            { text: "Gehe zu dem Gebäude, das ein Fernsehstudio hat, weil die Studierenden dieser Fachrichtung alles über Medien lernen.", answer: "J" },
-            { text: "Dieses Gebäude ist keine Fakultät. Es gibt nur Vorlesungssäle, in denen unterrichtet wird. In dem Gebäude befindet sich eine Bildergalerie. Schaue dir die Bilder genau an. Worin sitzt Dr. Wolfgang Heubisch?", answer: "Fast Forest" },
-            { text: "Bei uns könnt ihr kostengünstig etwas Essen. Mittagsgerichte und Snacks gibt es in diesem Gebäude.", answer: "Mensa" }
-        ];
+        const intro = data["intro"];
+        const questions = data["questions"];
+
+
         const quizContainer = document.getElementById('quiz');
         const nextButton = document.getElementById('next-btn');
         const prevButton = document.getElementById('prev-btn');
