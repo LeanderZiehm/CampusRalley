@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
      <link rel="icon" type="image/x-icon" href="icon.ico">
      <script src="data.js"></script>
     <title>THD Campus Treasure Hunt</title>
@@ -21,17 +22,36 @@
             <button id="finished-btn" class="btn">Fertig</button>
             <button id="continue-btn" class="btn">Weiter</button>
         </div>
-        <div id="finish-screen" class="finish-screen">
-            <h2></h2>
+        <div id="ad">
+            <p>Du "brennst" für unsere Hochschule und möchtest mehr erfahren? Dann schau doch mal vorbei:
+
+                <!-- <div> -->
+                    <a href="https://www.th-deg.de" target="_blank" >
+                        <img src="icon.ico" alt="Website Icon" style="width: 20px; height: 20px; margin-right: 5px;">
+                    </a>
+                    <a href="https://www.instagram.com/th_deggendorf/" target="_blank">
+                        <img src="instagram.png" alt="Instagram Icon" style="width: 20px; height: 20px; margin-right: 5px;">
+                    </a>
+                <!-- </div> -->
+            </p>
+        
+            
         </div>
+
     </div>
+
     <script>
+        localStorage.clear();
+
         const intro = data["intro"];
         const questions = data["questions"];
         const finalText = data["finalText"];
         const solutionText = data["solutionText"];
+        
         const falseCounter = {};
         let sawIntro = false;
+
+        const spaceChar = '&nbsp;';
 
 const questionsAnsweredCorrect = JSON.parse(localStorage.getItem("questionsAnsweredCorrect")) || {};
 
@@ -60,6 +80,10 @@ function updateAnswerStatus(questionIndex, isCorrect) {
         const finishScreen = document.getElementById('finish-screen');
         const continueBtn = document.getElementById('continue-btn');
         let currentQuestionIndex = 0;
+
+        
+        const ad = document.getElementById('ad');
+        ad.style.display = 'none';
 
         //load currentQuestionIndex from localStorage
         if (localStorage.getItem('currentQuestionIndex')) {
@@ -93,7 +117,7 @@ function updateAnswerStatus(questionIndex, isCorrect) {
                 input.value = value.slice(0, question.answer.length);
             }
             updateInputBlocks(input.value, question.answer, inputContainer);
-            feedback.textContent = '';
+            // feedback.textContent = '';
         }
         function loadQuestion(index) {
             localStorage.setItem('currentQuestionIndex', index);
@@ -126,6 +150,8 @@ function updateAnswerStatus(questionIndex, isCorrect) {
             textInputAndBlocks.appendChild(inputContainer);
             const feedback = document.createElement('p');
             feedback.classList.add('feedback');
+            feedback.style.visibility = 'hidden';
+            feedback.textContent = "Leider falsch. Probiere es nochmal (3 Versuche übrig)";
             input.addEventListener('input', () => handleInputEvent(input, question, inputContainer, feedback));
             input.addEventListener('blur', () => {
                 localStorage.setItem('input'+index, input.value);
@@ -158,6 +184,12 @@ function updateAnswerStatus(questionIndex, isCorrect) {
         function getSolutionChars(){
 
             let current = solutionText;
+
+            // replace space with doube space char
+            current = current.replace(/ /g, spaceChar+spaceChar);
+
+
+
             questions.forEach((question, index) => {
                 if(questionsAnsweredCorrect[index] == false){
 
@@ -167,12 +199,18 @@ function updateAnswerStatus(questionIndex, isCorrect) {
                     // replace first letter orrurence of in current with _ 
                     const index = current.indexOf(letter);
                     if (index !== -1) {
-                        current = current.substring(0, index) + '_' + current.substring(index + 1);
+                        current = current.substring(0, index) + '_'+spaceChar + current.substring(index + 1);
                     }
+                    // space char in html is &nbsp;
                     
                 }
             });
+            
             return current;
+        }
+
+        function makeBold(text){
+            return `<b>${text}</b>`;
         }
         function showFinishButton() {
 
@@ -186,12 +224,16 @@ function updateAnswerStatus(questionIndex, isCorrect) {
 
                 const loesungswortBuchstaben = getSolutionChars();
 
-                const text = countHowManyCorrect +"/"+ countHowManyTotal;
+                let text =  countHowManyCorrect +"/"+ countHowManyTotal;
+                text = makeBold(text);
+
                 const realFinalText = finalText.replace("[REPLACE_1]",text ).replace("[REPLACE_2]", loesungswortBuchstaben);
                 quizContainer.innerHTML = realFinalText;
                 checkBtn.style.display = 'none';
                 prevBtn.style.display = 'none';
                 finishedBtn.style.display = 'none';
+
+                ad.style.display = 'block';
 
             });
         }
@@ -221,25 +263,31 @@ function updateAnswerStatus(questionIndex, isCorrect) {
             updateAnswerStatus(currentQuestionIndex, isCorrect);
             if (isCorrect) {
                 console.log('correct');
-        
+
+                
                 loadCorrectText(currentQuestionIndex);
                 // loadNextQuestion();
             } else {
                 console.log('incorrect');
-
-                const feedback = document.querySelector('.feedback');
-                feedback.textContent = 'Falsche Antwort. Versuche es noch einmal.';
-
+                const maxFalseCounter = 3;
                 addFalseCounter(currentQuestionIndex);
                 const falseCounter = getFalseCounter();
+                const countersLeft = maxFalseCounter - falseCounter;
+              
+                const feedback = document.querySelector('.feedback');
+                feedback.style.visibility = 'visible';
+                feedback.textContent = `Leider falsch. Probiere es nochmal (${countersLeft} Versuche übrig)`;
+
                 
-                if (falseCounter >= 3) {
+           
+                
+                if (countersLeft <= 0) {
                    loadNextQuestion();
                 }
             }
 
 
-            checkBtn.style.display = 'none';
+         
         });
         prevBtn.addEventListener('click', () => {
             if (currentQuestionIndex > 0) {
@@ -249,11 +297,12 @@ function updateAnswerStatus(questionIndex, isCorrect) {
         });
         function loadCorrectText(index){
             const question = questions[index];
-            quizContainer.innerHTML = `<h2>${question.correctText}</h2> <p>${question.solutionText}</p>`;
-            continueBtn.style.display = 'none';
-            // prevBtn.style.visibility = 'hidden';
-            continueBtn.style.display = 'block';
 
+
+            quizContainer.innerHTML = `<h2>${question.correctText}</h2> <p> Durch deine Antwort <b> ${question.answer}</b> Du hast den Buchstaben <b> ${question.letter} </b> freigeschaltet</p>`;
+            
+            checkBtn.style.display = 'none';
+            continueBtn.style.display = 'block';
             continueBtn.addEventListener('click', () => {
                 loadQuestion(currentQuestionIndex);
                 checkBtn.style.display = 'block';
@@ -265,7 +314,11 @@ function updateAnswerStatus(questionIndex, isCorrect) {
         }
 
         function loadIntro() {
-    quizContainer.innerHTML = intro;
+
+
+            let introText = intro.replace("[REPLACE_1]", questions.length);
+            // let introText = intro.replace("[REPLACE_1]",  makeBold(questions.length));
+    quizContainer.innerHTML = introText;
 
     checkBtn.style.display = 'none';
     prevBtn.style.visibility = 'hidden';

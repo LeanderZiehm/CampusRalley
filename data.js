@@ -1,5 +1,5 @@
 const data = {
-    "intro": "Herzlichen Willkommen bei unserer Campusralley. Schön, dass du dabei bist. Es erwarten dich 11 Fragen, die dich über unseren Campus führen. Aus deinen Antworten ergibt sich ein Lösungswort. Umso mehr richtige Antworten du hast, umso mehr Buchstaben erspielst du für das Lösungswort. Also, los geht’s. Viel Erfolg! ",
+    "intro": "Herzlichen Willkommen bei unserer Campusralley. Schön, dass du dabei bist. Es erwarten dich [REPLACE_1] Fragen, die dich über unseren Campus führen. Aus deinen Antworten ergibt sich ein Lösungswort. Umso mehr richtige Antworten du hast, umso mehr Buchstaben erspielst du für das Lösungswort. Also, los geht’s. Viel Erfolg! ",
     "questions": [
         {
             id: 0,
@@ -81,6 +81,6 @@ const data = {
         }
     ],
     "solutionText": "THD IS MY FIRE",
-    "finalText":"Herzlichen Glückwunsch du hast [REPLACE_1] Fragen richtig beantwortet (je nachdem). Folgende Buchstaben hast du für das Lösungswort freigeschaltet:  [REPLACE_2]",
+    "finalText":"Herzlichen Glückwunsch du hast [REPLACE_1] Fragen richtig beantwortet.<br> Folgende Buchstaben hast du für das Lösungswort freigeschaltet:  [REPLACE_2]",
     "end":"Du „brennst“ für unsere Hochschule und möchtest mehr über uns erfahren? Schau gerne auf unserer Homepage oder unserem Instagram-Kanal vorbei. www.th-deg.de th_deggendorf"
 };
