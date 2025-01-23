@@ -6,159 +6,40 @@
      <link rel="icon" type="image/x-icon" href="icon.ico">
      <script src="data.js"></script>
     <title>THD Campus Treasure Hunt</title>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DW1EF1FQP8"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-DW1EF1FQP8');
-</script>`
-    
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-            color: #333;
-            user-select: none;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-        }
-        header {
-            background: #333;
-            color: #fff;
-            padding: 10px 0;
-            text-align: center;
-        }
-        .container {
-            width: 60%;
-            margin: 20px auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        .question {
-            display: none;
-        }
-        .question.active {
-            display: block;
-        }
-        .question h2 {
-            margin-bottom: 10px;
-        }
-        .input-container {
-            display: flex;
-            gap: 5px;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
-        .input-container span {
-            width: 30px;
-            height: 30px;
-            border: 1px solid #ccc;
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 18px;
-            font-weight: bold;
-            background-color: #fff;
-        }
-        .input-container span.correct {
-            background-color: #4caf50;
-            color: #fff;
-        }
-        .input-container span.incorrect {
-            background-color: red;
-            color: #fff;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            font-size: 16px;
-            color: #fff;
-            background: #007BFF;
-            text-decoration: none;
-            border-radius: 4px;
-            margin-top: 10px;
-            cursor: pointer;
-        }
-        .btn:hover {
-            background: #0056b3;
-        }
-    
-        .correct {
-            color: green;
-        }
-        .incorrect {
-        }
-        .text-input {
-            position: absolute;
-            width: 90%;
-            height: 40px;
-            opacity: 0;
-        }
-        .bottom-buttons {
-            display: flex;
-            justify-content: space-between;
-        }
-        .currentBlock {
-            border-color: #007BFF !important;
-        }
-        .finish-screen {
-            display: none;
-            text-align: center;
-            font-size: 2rem;
-            color: green;
-            font-weight: bold;
-        }
-        .feedback {
-            margin-top: 10px;
-            font-weight: bold;
-            color: red;
-        }
-    </style>
+    <script defer data-domain="campus-ralley-leanders-projects-e25bc477.vercel.app" src="https://plausible.io/js/script.js"></script> 
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400&display=swap" rel="stylesheet">
+
 </head>
 <body>
+    <img src="thd-logo.png" style="height: 10vh; position: absolute; top:0px; left:0px; padding: 1vw;" alt="THD Logo" class="logo">
     <div class="container">
         <div id="quiz"></div>
         <div class="bottom-buttons">
             <button id="prev-btn" class="btn">Zurück</button>
-            <button id="next-btn" class="btn">Lösung Prüfen</button>
-            <button id="finished" class="btn">Fertig</button>
-            <button id="introWeiter" class="btn">Weiter</button>
+            <button id="check-btn" class="btn">Lösung Prüfen</button>
+            <button id="finished-btn" class="btn">Fertig</button>
+            <button id="continue-btn" class="btn">Weiter</button>
         </div>
         <div id="finish-screen" class="finish-screen">
             <h2></h2>
         </div>
     </div>
     <script>
-
-        //zahlen 
-
-        // fülle alles aus 
-
         const intro = data["intro"];
         const questions = data["questions"];
         const finalText = data["finalText"];
+        const solutionText = data["solutionText"];
         const falseCounter = {};
-        // const correctCounter = {};
+        let sawIntro = false;
 
-        //for all questions set it to false
-
-        // Store a record of questions answered correctly in localStorage or initialize as an empty object
 const questionsAnsweredCorrect = JSON.parse(localStorage.getItem("questionsAnsweredCorrect")) || {};
 
 // Iterate over all questions to mark them as unanswered initially and store them in localStorage
 questions.forEach((question, index) => {
-    if (!questionsAnsweredCorrect.hasOwnProperty(index)) {
-        questionsAnsweredCorrect[index] = false; // False implies unanswered or incorrect
+    const questionIndex = index;
+    if (!questionsAnsweredCorrect.hasOwnProperty(questionIndex)) {
+        questionsAnsweredCorrect[questionIndex] = false; // False implies unanswered or incorrect
     }
 });
 
@@ -172,17 +53,24 @@ function updateAnswerStatus(questionIndex, isCorrect) {
     localStorage.setItem("questionsAnsweredCorrect", JSON.stringify(questionsAnsweredCorrect));
 }
 
-
-
         const quizContainer = document.getElementById('quiz');
-        const nextButton = document.getElementById('next-btn');
-        const prevButton = document.getElementById('prev-btn');
+        const checkBtn = document.getElementById('check-btn');
+        const prevBtn = document.getElementById('prev-btn');
+        const finishedBtn = document.getElementById('finished-btn');
         const finishScreen = document.getElementById('finish-screen');
+        const continueBtn = document.getElementById('continue-btn');
         let currentQuestionIndex = 0;
+
+        //load currentQuestionIndex from localStorage
+        if (localStorage.getItem('currentQuestionIndex')) {
+            currentQuestionIndex = parseInt(localStorage.getItem('currentQuestionIndex'));
+        }
+        currentQuestionIndex -=1; 
+
+
         const answers = [];
         let currentInput = '';
 
-        const finishedBtn = document.getElementById('finished');
         finishedBtn.style.display = 'none';
 
 
@@ -190,17 +78,7 @@ function updateAnswerStatus(questionIndex, isCorrect) {
             inputContainer.innerHTML = '';
             for (let i = 0; i < answer.length; i++) {
                 const block = document.createElement('span');
-                
-                // const currentChar = value[i] || '';
-
                 block.textContent = value[i] || '';
-                // currentInput += currentChar;
-
-                // if (value[i]?.toLowerCase() === answer[i].toLowerCase()) {
-                //     block.classList.add('correct');
-                // } else if (value[i] && value[i].toLowerCase() !== answer[i].toLowerCase()) {
-                //     block.classList.add('incorrect');
-                // }
                 if (i === value.length) {
                     block.classList.add('currentBlock');
                 }
@@ -218,6 +96,9 @@ function updateAnswerStatus(questionIndex, isCorrect) {
             feedback.textContent = '';
         }
         function loadQuestion(index) {
+            localStorage.setItem('currentQuestionIndex', index);
+
+
             quizContainer.innerHTML = '';
             const question = questions[index];
             const questionDiv = document.createElement('div');
@@ -260,44 +141,56 @@ function updateAnswerStatus(questionIndex, isCorrect) {
             console.log('currentQuestionIndex', currentQuestionIndex);
 
             if (currentQuestionIndex === 0) {
-                prevButton.style.visibility = 'hidden';
+                prevBtn.style.visibility = 'hidden';
             } else {
-                prevButton.style.visibility = 'visible';
+                prevBtn.style.visibility = 'visible';
             }
             if (currentQuestionIndex === questions.length - 1) {
-                nextButton.style.visibility = 'hidden';
+                // checkBtn.style.visibility = 'hidden';
+                checkBtn.style.display = 'none';
                 showFinishButton();
             } else {
-                nextButton.style.visibility = 'visible';
+                // checkBtn.style.visibility = 'visible';
+                checkBtn.style.display = 'block';
+                continueBtn.style.display = 'none';
             }
+        }
+        function getSolutionChars(){
+
+            let current = solutionText;
+            questions.forEach((question, index) => {
+                if(questionsAnsweredCorrect[index] == false){
+
+                    const letter = question.letter;
+
+                    // current
+                    // replace first letter orrurence of in current with _ 
+                    const index = current.indexOf(letter);
+                    if (index !== -1) {
+                        current = current.substring(0, index) + '_' + current.substring(index + 1);
+                    }
+                    
+                }
+            });
+            return current;
         }
         function showFinishButton() {
 
 
             finishedBtn.style.display = 'block';
+            continueBtn.style.display = 'none';
             finishedBtn.addEventListener('click', () => {
-                // finishScreen.style.display = 'block';
-
-
-                const loesungswortBuchstaben = "XYZ"
 
                 const countHowManyCorrect = Object.values(questionsAnsweredCorrect).filter(Boolean).length;
                 const countHowManyTotal = questions.length;
 
+                const loesungswortBuchstaben = getSolutionChars();
+
                 const text = countHowManyCorrect +"/"+ countHowManyTotal;
-
-
-                const realFinalText = finalText.replace("[REPLACE_1]",text)
-                // const realFinalText = finalText.replace("[REPLACE_1]",text ).replace("[REPLACE_2]", loesungswortBuchstaben);
-
-
+                const realFinalText = finalText.replace("[REPLACE_1]",text ).replace("[REPLACE_2]", loesungswortBuchstaben);
                 quizContainer.innerHTML = realFinalText;
-
-
-
-
-                nextButton.style.display = 'none';
-                prevButton.style.display = 'none';
+                checkBtn.style.display = 'none';
+                prevBtn.style.display = 'none';
                 finishedBtn.style.display = 'none';
 
             });
@@ -322,18 +215,15 @@ function updateAnswerStatus(questionIndex, isCorrect) {
             return falseCounter[currentQuestionIndex] || 0;
         }
 
-        nextButton.addEventListener('click', () => {
+        checkBtn.addEventListener('click', () => {
 
             const isCorrect = currentInput.trim().toLowerCase() === questions[currentQuestionIndex].answer.toLowerCase();
-
-
             updateAnswerStatus(currentQuestionIndex, isCorrect);
-
-            //check if input is correct
             if (isCorrect) {
                 console.log('correct');
         
-                loadNextQuestion();
+                loadCorrectText(currentQuestionIndex);
+                // loadNextQuestion();
             } else {
                 console.log('incorrect');
 
@@ -347,34 +237,41 @@ function updateAnswerStatus(questionIndex, isCorrect) {
                    loadNextQuestion();
                 }
             }
-            
 
 
-          
+            checkBtn.style.display = 'none';
         });
-        prevButton.addEventListener('click', () => {
+        prevBtn.addEventListener('click', () => {
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
                 loadQuestion(currentQuestionIndex);
             }
         });
-        // loadQuestion(currentQuestionIndex);
+        function loadCorrectText(index){
+            const question = questions[index];
+            quizContainer.innerHTML = `<h2>${question.correctText}</h2> <p>${question.solutionText}</p>`;
+            continueBtn.style.display = 'none';
+            // prevBtn.style.visibility = 'hidden';
+            continueBtn.style.display = 'block';
+
+            continueBtn.addEventListener('click', () => {
+                loadQuestion(currentQuestionIndex);
+                checkBtn.style.display = 'block';
+                // nextBtn.style.display = 'none';
+            });
 
 
 
+        }
 
         function loadIntro() {
     quizContainer.innerHTML = intro;
-    // quizContainer.appendChild(centerDiv);
 
-    nextButton.style.display = 'none';
-    prevButton.style.visibility = 'hidden';
+    checkBtn.style.display = 'none';
+    prevBtn.style.visibility = 'hidden';
 
-    introWeiter.addEventListener('click', () => {
-        loadQuestion(currentQuestionIndex);
-        nextButton.style.display = 'block';
-        introWeiter.style.display = 'none';
-        // prevButton.style.visibility = 'visible';
+    continueBtn.addEventListener('click', () => {
+        loadNextQuestion();
     });
 }
 
