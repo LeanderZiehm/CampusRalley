@@ -21,13 +21,13 @@
     <div class="container">
         <div id="quiz">Starting...</div>
         <div id="bottom-buttons" style="visibility: hidden;" >
-            <button id="prev-btn" class="btn">XX</button>
+            <button id="prev-btn" class="btn">Zurück</button>
             <button id="check-btn" class="btn">Lösung Prüfen</button>
             <button id="finished-btn" class="btn">Fertig</button>
             <button id="continue-btn" class="btn">Weiter</button>
         </div>
         <div id="ad">
-            <p> <span id="link-text" >Du "brennst" für unsere Hochschule und möchtest mehr erfahren?</span>
+            <p>Du "brennst" für unsere Hochschule und möchtest mehr erfahren?
 
           
                     <a href="https://www.th-deg.de" target="_blank" >
@@ -69,21 +69,7 @@
 
 
 
-        function setup(){
-            setupButtonsWithDataText();
-            loadIntro();
-
-        }
-        function setupButtonsWithDataText(){
-            // link-text
-            document.getElementById("link-text").innerHTML = data['link-text'];
-            document.getElementById("prev-btn").innerHTML = data['prev-btn'];
-            document.getElementById("check-btn").innerHTML = data['check-btn'];
-            document.getElementById("finished-btn").innerHTML = data['finished-btn'];
-            document.getElementById("continue-btn").innerHTML = data['continue-btn'];
-
-            
-        }
+        function setupButtonsWithDataText(){}
 
 
 
@@ -116,9 +102,7 @@
                 questions = data["questions"];
 
                 // Initialize the quiz after fetching the data
-
-                setup();
-               
+                loadIntro();
             } catch (error) {
                 console.error('Failed to fetch data:', error);
             }
@@ -236,7 +220,7 @@ function updateAnswerStatus(questionIndex, isCorrect) {
             const feedback = document.createElement('p');
             feedback.classList.add('feedback');
             feedback.style.visibility = 'hidden';
-            feedback.textContent = getWrongText();
+            feedback.textContent = "Leider falsch. Probiere es nochmal (3 Versuche übrig)";
             input.addEventListener('input', () => handleInputEvent(input, question, inputContainer, feedback));
             input.addEventListener('blur', () => {
                 localStorage.setItem('input'+index, input.value);
@@ -295,14 +279,8 @@ function updateAnswerStatus(questionIndex, isCorrect) {
         }
 
         function makeBold(text){
-            // return `<b>${text}</b>`;
-            return addElement(text,"b");
+            return `<b>${text}</b>`;
         }
-
-        function addElement(text,elementName){
-            return `<${elementName}>${text}</${elementName}>`
-        }
-
         function showFinishButton() {
 
 
@@ -347,10 +325,6 @@ function updateAnswerStatus(questionIndex, isCorrect) {
         function getFalseCounter(){
             return falseCounter[currentQuestionIndex] || 0;
         }
-    
-        function getWrongText(countLeft =3){
-            return data["wrong-text"].replace("[REPLACE_1]", countLeft);
-        }
 
         checkBtn.addEventListener('click', () => {
 
@@ -371,7 +345,7 @@ function updateAnswerStatus(questionIndex, isCorrect) {
               
                 const feedback = document.querySelector('.feedback');
                 feedback.style.visibility = 'visible';
-                feedback.textContent =  getWrongText(countersLeft);
+                feedback.textContent = `Leider falsch. Probiere es nochmal (${countersLeft} Versuche übrig)`;
 
                 
            
@@ -394,22 +368,8 @@ function updateAnswerStatus(questionIndex, isCorrect) {
             const question = questions[index];
 
 
-            //
-            // quizContainer.innerHTML = `<h2>${question.correctText}</h2> <p> Durch deine Antwort <b> ${question.answer}</b> hast du den Buchstaben <b> ${question.letter} </b> freigeschaltet</p>`;
+            quizContainer.innerHTML = `<h2>${question.correctText}</h2> <p> Durch deine Antwort <b> ${question.answer}</b> hast du den Buchstaben <b> ${question.letter} </b> freigeschaltet</p>`;
             
-            
-            
-            const correctText = data["correct-text"].replace("[REPLACE_1]", makeBold(question.answer) ).replace("[REPLACE_2]",makeBold(question.letter));
-            let quizContainerInnerHTML = `<h2>${question.correctText}</h2> <p>${correctText}</p>`;
-            
-            quizContainer.innerHTML = quizContainerInnerHTML
-            
-            
-            // `<h2>${question.correctText}</h2> <p> Durch deine Antwort <b> ${question.answer}</b> hast du den Buchstaben <b> ${question.letter} </b> freigeschaltet</p>`;
-            // data["intro"]
-
-
-
             checkBtn.style.display = 'none';
             continueBtn.style.display = 'block';
             continueBtn.addEventListener('click', () => {
