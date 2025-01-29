@@ -81,6 +81,6 @@ const data = {
         }
     ],
     "solutionText": "THD IS MY FIRE",
-    "finalText":"Herzlichen Glückwunsch du hast [REPLACE_1] Fragen richtig beantwortet.<br> Folgende Buchstaben hast du für das Lösungswort freigeschaltet:  [REPLACE_2]",
+    "finalText":"Herzlichen Glückwunsch du hast [REPLACE_1] Fragen richtig beantwortet.<br> Folgende Buchstaben hast du für den Lösungssatz freigeschaltet:  [REPLACE_2]",
     "end":"Du „brennst“ für unsere Hochschule und möchtest mehr über uns erfahren? Schau gerne auf unserer Homepage oder unserem Instagram-Kanal vorbei. www.th-deg.de th_deggendorf"
 };

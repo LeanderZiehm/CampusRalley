@@ -108,7 +108,7 @@ header {
     height: 40px;
     opacity: 0;
 }
-.bottom-buttons {
+#bottom-buttons {
     display: flex;
     justify-content: space-between;
 }
