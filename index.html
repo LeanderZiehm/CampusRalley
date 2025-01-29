@@ -213,7 +213,7 @@ function updateAnswerStatus(questionIndex, isCorrect) {
             const questionDiv = document.createElement('div');
             questionDiv.classList.add('question', 'active');
             const title = document.createElement('h2');
-            title.textContent = `Frage ${index+1}`;
+            title.textContent = data['question'] + ` ${index+1}`;
             const text = document.createElement('p');
             text.textContent = question.text;
             const input = document.createElement('input');
