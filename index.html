@@ -256,15 +256,14 @@ function updateAnswerStatus(questionIndex, isCorrect) {
             } else {
                 prevBtn.style.visibility = 'visible';
             }
-            if (currentQuestionIndex === questions.length - 1) {
+            // if (currentQuestionIndex === questions.length - 1) {
                 // checkBtn.style.visibility = 'hidden';
-                checkBtn.style.display = 'none';
-                showFinishButton();
-            } else {
+         
+            // } else {
                 // checkBtn.style.visibility = 'visible';
                 checkBtn.style.display = 'block';
                 continueBtn.style.display = 'none';
-            }
+            // }
         }
         function getSolutionChars(){
 
@@ -305,6 +304,8 @@ function updateAnswerStatus(questionIndex, isCorrect) {
 
         function showFinishButton() {
 
+            checkBtn.style.display = 'none';
+
 
             finishedBtn.style.display = 'block';
             continueBtn.style.display = 'none';
@@ -334,7 +335,11 @@ function updateAnswerStatus(questionIndex, isCorrect) {
                 currentQuestionIndex++;
                 loadQuestion(currentQuestionIndex);
             } else {
-                alert('You have completed the quiz!');
+                // alert('You have completed the quiz!');
+                showFinishButton();
+
+                // 
+                // showFinishButton();
             }
         }
 
