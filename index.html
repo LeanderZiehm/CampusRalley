@@ -244,28 +244,26 @@ function showCurrentBlock(){
 
         // Function to fetch data based on selected language
         async function fetchData() {
-            // console.log("Fetching Data...");
             const selectedLang = getLanguage();
             const apiUrl = `${linkBase}${selectedLang}`;
-
             try {
+                throw new Error('Failed to fetch data: Error message');
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 data = await response.json();
                 questions = data["questions"];
-
-                // Initialize the quiz after fetching the data
-
                 setup();
-               
             } catch (error) {
-                console.error('Failed to fetch data:', error);
+                const quizContainer = document.getElementById('quiz');
+                if (selectedLang === 'de') {
+                    quizContainer.innerHTML = 'Die Campus Rallye konnte nicht geladen werden. Stelle sicher dass du im Bayern Wlan bist und nicht in eduroam.'
+                } else {
+                    quizContainer.innerHTML = 'The Campus Rallye could not be loaded. Make sure you are in Bayern Wlan and not in eduroam.'
+                }
             }
         }
-
-        
 
 
 
