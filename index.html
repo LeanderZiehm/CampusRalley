@@ -329,6 +329,30 @@ function updateAnswerStatus(questionIndex, isCorrect) {
 
 
 
+        function loadAnswerFromLocalStorage(index) {
+            const savedAnswer = localStorage.getItem('input'+index) || '';
+
+            //loop over the saved answer and fill the blocks
+        
+
+            //if is correct make all blocks green
+            if (questionsAnsweredCorrect[index]) {
+                for (let i = 0; i < savedAnswer.length; i++) {
+                blocksArray[i].textContent = savedAnswer[i];
+                }
+                blocksArray.forEach(block => block.classList.add('correct'));
+            }
+            // else{
+                // blocksArray.forEach(block => block.classList.add('incorrect'));
+            // }
+
+        }
+
+        function saveAnswerToLocalStorage(index) {
+            const currentInput = blocksArray.map(block => block.textContent).join('');
+            localStorage.setItem('input'+index, currentInput);
+        }
+
 
 
 
@@ -392,6 +416,7 @@ function updateAnswerStatus(questionIndex, isCorrect) {
 
 
             setCurrentBlockIndex(0);
+            loadAnswerFromLocalStorage(index);
 
             console.log('currentQuestionIndex', currentQuestionIndex);
 
@@ -500,13 +525,24 @@ function updateAnswerStatus(questionIndex, isCorrect) {
         checkBtn.addEventListener('click', () => {
 
 
+            saveAnswerToLocalStorage(currentQuestionIndex);
 
             const currentInput = blocksArray.map(block => block.textContent).join('');
 
             const isCorrect = currentInput.trim().toLowerCase() === questions[currentQuestionIndex].answer.toLowerCase();
+
+            const wasCoorectBefore = questionsAnsweredCorrect[currentQuestionIndex];
+
+
             updateAnswerStatus(currentQuestionIndex, isCorrect);
             if (isCorrect) {
                 console.log('correct');
+
+                if (wasCoorectBefore) {
+                    loadNextQuestion();
+                    return;
+                }
+
 
                 
                 loadCorrectText(currentQuestionIndex);
@@ -549,7 +585,7 @@ function updateAnswerStatus(questionIndex, isCorrect) {
             
             
             const correctText = data["correct-text"].replace("[REPLACE_1]", makeBold(question.answer) ).replace("[REPLACE_2]",makeBold(question.letter));
-            let quizContainerInnerHTML = `<h2>${question.correctText}</h2> <p>${correctText}</p>`;
+            let quizContainerInnerHTML = `<b>${question.correctText}</b> <p>${correctText}</p>`;
             
             quizContainer.innerHTML = quizContainerInnerHTML
             
