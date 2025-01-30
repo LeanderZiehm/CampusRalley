@@ -106,6 +106,7 @@
             dummyInput = document.createElement('input');
             dummyInput.value = ' ';
             dummyInput.style.opacity = 0;
+            dummyInput.style.position = 'absolute';
             document.body.appendChild(dummyInput);
             dummyInput.addEventListener('input', (e) => {
                     onInput(e);
