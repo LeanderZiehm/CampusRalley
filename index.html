@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <link rel="icon" type="image/x-icon" href="icon.ico" />
-    <title>THD Campus Treasure Hunt</title>
+    <title>THD Campus Rallye</title>
     <script defer data-domain="campus-ralley.vercel.app" src="https://plausible.io/js/script.js"></script>
     <link rel="stylesheet" href="styles.css" />
     <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400&display=swap" rel="stylesheet" />
@@ -68,7 +68,7 @@
         const continueBtn = document.getElementById("continue-btn");
         const tryAgainBtn = document.getElementById("try-again-btn");
         const ad = document.getElementById("ad");
-     
+
 
         //load currentQuestionIndex from localStorage
         if (localStorage.getItem("currentQuestionIndex")) {
@@ -91,8 +91,8 @@
 
         function setupElements() {
             tryAgainBtn.addEventListener("click", () => {
-            //    allert ask if you want to delete
-                if(confirm(tryAgainText)) {
+                //    allert ask if you want to delete
+                if (confirm(tryAgainText)) {
                     localStorage.clear();
                     location.reload();
                 }
@@ -103,50 +103,50 @@
             // finishedBtn.style.display = "none";
         }
 
-                function setupButtonsWithDataText() {
-                        // link-text
-                        document.getElementById("link-text").innerHTML = data["link-text"];
-                        document.getElementById("prev-btn").innerHTML = data["prev-btn"];
-                        document.getElementById("check-btn").innerHTML = data["check-btn"];
-                        document.getElementById("finished-btn").innerHTML =
-                            data["finished-btn"];
-                        document.getElementById("continue-btn").innerHTML =
-                            data["continue-btn"];
-                        document.getElementById("try-again-btn").innerHTML =
-                            data["try-again-btn"];
+        function setupButtonsWithDataText() {
+            // link-text
+            document.getElementById("link-text").innerHTML = data["link-text"];
+            document.getElementById("prev-btn").innerHTML = data["prev-btn"];
+            document.getElementById("check-btn").innerHTML = data["check-btn"];
+            document.getElementById("finished-btn").innerHTML =
+                data["finished-btn"];
+            document.getElementById("continue-btn").innerHTML =
+                data["continue-btn"];
+            document.getElementById("try-again-btn").innerHTML =
+                data["try-again-btn"];
 
-                        tryAgainText = data["try-again-text"];
-                    }
-                function setupTextInput() {
-                        // console.log('setupDummyInput');
-                        dummyInput = document.createElement("input");
-                        dummyInput.value = " ";
-                        dummyInput.style.opacity = 0;
-                        dummyInput.style.position = "absolute";
-                        document.body.appendChild(dummyInput);
-                        dummyInput.addEventListener("input", (e) => {
-                            onInput(e);
-                            if (dummyInput.value.length == 0) {
-                                dummyInput.value = " ";
-                            }
-                        });
+            tryAgainText = data["try-again-text"];
+        }
+        function setupTextInput() {
+            // console.log('setupDummyInput');
+            dummyInput = document.createElement("input");
+            dummyInput.value = " ";
+            dummyInput.style.opacity = 0;
+            dummyInput.style.position = "absolute";
+            document.body.appendChild(dummyInput);
+            dummyInput.addEventListener("input", (e) => {
+                onInput(e);
+                if (dummyInput.value.length == 0) {
+                    dummyInput.value = " ";
+                }
+            });
 
-                        dummyInput.addEventListener("keydown", (e) => {
-                            //enter
-                            if (e.keyCode === 13) {
-                                e.preventDefault();
-                                checkBtn.click();
-                            }
-                        });
+            dummyInput.addEventListener("keydown", (e) => {
+                //enter
+                if (e.keyCode === 13) {
+                    e.preventDefault();
+                    checkBtn.click();
+                }
+            });
 
-                        //on lose focus set timer to focus again
-                        dummyInput.addEventListener("blur", () => {
-                            setTimeout(() => {
-                                showKeyboardCaptureInput();
-                            }, 100);
-                        });
-                        showKeyboardCaptureInput();
-                    }
+            //on lose focus set timer to focus again
+            dummyInput.addEventListener("blur", () => {
+                setTimeout(() => {
+                    showKeyboardCaptureInput();
+                }, 100);
+            });
+            showKeyboardCaptureInput();
+        }
 
 
         function createInputBoxes(question, blockContainer) {
@@ -490,7 +490,7 @@
         }
 
         function getWrongText(countLeft = 3) {
-            if(countLeft < 0){
+            if (countLeft < 0) {
                 countLeft = 0;
             }
             return data["wrong-text"].replace("[REPLACE_1]", countLeft);
