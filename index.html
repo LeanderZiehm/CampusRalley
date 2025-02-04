@@ -21,7 +21,7 @@
         padding: 1vw;
       " alt="THD Logo" class="logo" />
 
-    <button id="try-again-btn" class="btn" style="position: absolute; top: 1vw; right: 1vw; display: none">
+    <button id="try-again-btn" class="btn">
         Nochmal
     </button>
 
@@ -49,6 +49,20 @@
         </div>
     </div>
 
+    <style>
+        #try-again-btn {
+            position: absolute;
+            top: 1vw;
+            right: 1vw;
+            display: none;
+        }
+
+        #finished-btn {
+            display: none;
+        }
+    </style>
+
+
     <script>
         const linkBase = "https://campus-rallye-backend.vercel.app/";
 
@@ -70,6 +84,19 @@
         const ad = document.getElementById("ad");
 
 
+        fetchData();
+
+        // localStorage.clear();
+
+        const falseCounter = {};
+        let sawIntro = false;
+
+        const spaceChar = "&nbsp;";
+
+        const questionsAnsweredCorrect =
+            JSON.parse(localStorage.getItem("questionsAnsweredCorrect")) || {};
+
+
         //load currentQuestionIndex from localStorage
         if (localStorage.getItem("currentQuestionIndex")) {
             currentQuestionIndex = parseInt(
@@ -86,7 +113,7 @@
             setupButtonsWithDataText();
             setupTextInput();
             loadIntro();
-            loadNextQuestion(); // REMOVE THIS
+            // loadNextQuestion(); // REMOVE THIS
         }
 
         function setupElements() {
@@ -228,7 +255,8 @@
                 // console.log('event', event);
 
                 const eventData = event.data || "";
-                const eventIsLetter = eventData.match(/[a-zA-Z]/i);
+                const eventIsLetter = eventData.match(/[a-zA-ZäöüÄÖÜß]/i);
+
                 // console.log('eventIsLetter', eventIsLetter);
                 if (eventIsLetter) {
                     //check if index is bigger than array length
@@ -292,17 +320,6 @@
             }
         }
 
-        fetchData();
-
-        // localStorage.clear();
-
-        const falseCounter = {};
-        let sawIntro = false;
-
-        const spaceChar = "&nbsp;";
-
-        const questionsAnsweredCorrect =
-            JSON.parse(localStorage.getItem("questionsAnsweredCorrect")) || {};
 
         function updateAnswerStatus(questionIndex, isCorrect) {
             // console.log("questionIndex", questionIndex, "isCorrect", isCorrect);
