@@ -1,416 +1,588 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-     <link rel="icon" type="image/x-icon" href="icon.ico">
-    <title>THD Campus Treasure Hunt</title>
-    <script defer data-domain="campus-ralley.vercel.app" src="https://plausible.io/js/script.js"></script>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400&display=swap" rel="stylesheet">
 
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="icon" type="image/x-icon" href="icon.ico" />
+    <title>THD Campus Rallye</title>
+    <script defer data-domain="campus-ralley.vercel.app" src="https://plausible.io/js/script.js"></script>
+    <link rel="stylesheet" href="styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400&display=swap" rel="stylesheet" />
 </head>
+
 <body>
-    <img src="thd-logo.png" style="height: 10vh; position: absolute; top:0px; left:0px; padding: 1vw;" alt="THD Logo" class="logo">
-    <!-- <label for="language">Choose Language:</label>
-    <select id="language">
-        <option value="de">Deutsch</option>
-        <option value="en">English</option>
-    </select> -->
+    <img src="thd-logo.png" style="
+        height: 10vh;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        padding: 1vw;
+      " alt="THD Logo" class="logo" />
+
+    <button id="try-again-btn" class="btn">Nochmal</button>
+
     <div class="container">
         <div id="quiz">Starting...</div>
-        <div id="bottom-buttons" style="visibility: hidden;" >
-            <button id="prev-btn" class="btn">Zurück</button>
+        <div id="bottom-buttons" style="visibility: hidden">
+            <button id="prev-btn" class="btn">XX</button>
             <button id="check-btn" class="btn">Lösung Prüfen</button>
             <button id="finished-btn" class="btn">Fertig</button>
             <button id="continue-btn" class="btn">Weiter</button>
         </div>
-        <div id="ad">
-            <p>Du "brennst" für unsere Hochschule und möchtest mehr erfahren?
+        <div id="ad" style="display: none">
+            <p>
+                <span id="link-text">Du "brennst" für unsere Hochschule und möchtest mehr
+                    erfahren?</span>
 
-          
-                    <a href="https://www.th-deg.de" target="_blank" >
-                        <img src="thd-logo.png" alt="Website Icon" style="width: 40px; height: 40px; margin-right: 5px;">
-                    </a>
-                    <a href="https://www.instagram.com/th_deggendorf/" target="_blank">
-                        <img src="instagram.png" alt="Instagram Icon" style="width: 40px; height: 40px; margin-right: 5px;">
-                    </a>
+                <a href="https://www.th-deg.de" target="_blank">
+                    <img src="thd-logo.png" alt="Website Icon" style="width: 40px; height: 40px; margin-right: 5px" />
+                </a>
+                <a href="https://www.instagram.com/th_deggendorf/" target="_blank">
+                    <img src="instagram.png" alt="Instagram Icon" style="width: 40px; height: 40px; margin-right: 5px" />
+                </a>
                 <!-- </div> -->
             </p>
-        
-            
         </div>
-
     </div>
 
+    <style>
+        #try-again-btn {
+            position: absolute;
+            top: 1vw;
+            right: 1vw;
+            display: none;
+        }
+
+        #finished-btn {
+            display: none;
+        }
+    </style>
+
     <script>
-
-// bei der letzten Frage "Säulen", steht dabei "Lösung prüfen" und "Fertig". Ausversehen habe ich nach der Eingabe des Lösungswortes auf fertig geklickt. Kann hier ebenfalls nur "Lösung prüfen" und "zurück" stehen. Wenn die Lösung richtig war, dann kommt direkt die letzte Seite. Wenn Sie falsch war, dann die Meldung "leider falsch..."
-// Wenn ich eine Lösung falsch habe und sie nochmal eingeben will, kann ich nicht mehr ins erste Feld klicken. Nur nach Zufall, wenn ich paar Mal einen Buchstaben auf der Tastatur drücke komme ich wieder an den Anfang des Lösungswortes
-// Auf dem Smartphone: bitte anschauen, kann man hier das Format anpassen? Teilweise ist der Text so lang und man kann nicht nach unten scrollen um auf weiter zu klicken. Man hängt quasi fest
- 
-//[extract the text and turn it into the google docs]
-//    quizContainer.innerHTML = `<h2>${question.correctText}</h2> <p> Durch deine Antwort <b> ${question.answer}</b> hast du den Buchstaben <b> ${question.letter} </b> freigeschaltet</p>`;
-// feedback.textContent = `Leider falsch. Probiere es nochmal (${countersLeft} Versuche übrig)`;
-//Also extract the button text names and ad show Du "brennst" für unsere Hochschule und möchtest mehr erfahren?
-
-
-
-
-// ??? Frage 3: L ist nicht mehr der letzte im THD Abc, da wir jetzt auch P haben für Campusstore. Hier also "ist das vorletzte im THD ABC" schreiben
-
-
-
-
+        const linkBase = "https://campus-rallye-backend.vercel.app/";
+        let currentQuestionIndex = 0;
         let data;
         let questions;
+        let dummyInput;
+        let tryAgainText;
+        let blocksArray = [];
+        const answers = [];
 
+        const quizContainer = document.getElementById("quiz");
+        const checkBtn = document.getElementById("check-btn");
+        const prevBtn = document.getElementById("prev-btn");
+        const finishedBtn = document.getElementById("finished-btn");
+        const finishScreen = document.getElementById("finish-screen");
+        const continueBtn = document.getElementById("continue-btn");
+        const tryAgainBtn = document.getElementById("try-again-btn");
+        const ad = document.getElementById("ad");
 
+        const falseCounter = {};
+        let sawIntro = false;
+        const spaceChar = "&nbsp;";
 
+        const SAVE_PROGRESS = true;
 
-        function setupButtonsWithDataText(){}
-
-
-
-
-            // Function to get URL parameters
-        function getLanguage() {
-                const param = 'lang'
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param) || 'de';
+        if (!SAVE_PROGRESS) {
+            localStorage.clear();
         }
 
-        // Function to update the URL without reloading the page
-        function updateURL(lang) {
-            const newUrl = `${window.location.pathname}?lang=${lang}`;
-            window.history.pushState({ path: newUrl }, '', newUrl);
-        }
+        const questionsAnsweredCorrect =
+            JSON.parse(localStorage.getItem("questionsAnsweredCorrect")) || {};
 
-        // Function to fetch data based on selected language
+        //load currentQuestionIndex from localStorage
+        if (localStorage.getItem("currentQuestionIndex")) {
+            currentQuestionIndex = parseInt(
+                localStorage.getItem("currentQuestionIndex")
+            );
+        }
+        currentQuestionIndex -= 1;
+
+        fetchData();
+
         async function fetchData() {
-            console.log("Fetching Data...");
             const selectedLang = getLanguage();
-            const apiUrl = `https://campus-rallye-backend.vercel.app/${selectedLang}`;
-
+            const apiUrl = `${linkBase}${selectedLang}`;
             try {
+                // throw new Error('Failed to fetch data: Error message');
                 const response = await fetch(apiUrl);
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 data = await response.json();
                 questions = data["questions"];
-
-                // Initialize the quiz after fetching the data
-                loadIntro();
+                setup();
             } catch (error) {
-                console.error('Failed to fetch data:', error);
-            }
-        }
-
-        
-
-
-
-
-
-
-
-
-
-
-
-        fetchData();
-
-
-        localStorage.clear();
-
-
-        
-        const falseCounter = {};
-        let sawIntro = false;
-
-        const spaceChar = '&nbsp;';
-
-const questionsAnsweredCorrect = JSON.parse(localStorage.getItem("questionsAnsweredCorrect")) || {};
-
-function updateAnswerStatus(questionIndex, isCorrect) {
-
-    console.log('questionIndex', questionIndex , 'isCorrect', isCorrect);
-    questionsAnsweredCorrect[questionIndex] = isCorrect;
-    
-    localStorage.setItem("questionsAnsweredCorrect", JSON.stringify(questionsAnsweredCorrect));
-}
-
-        const quizContainer = document.getElementById('quiz');
-        const checkBtn = document.getElementById('check-btn');
-        const prevBtn = document.getElementById('prev-btn');
-        const finishedBtn = document.getElementById('finished-btn');
-        const finishScreen = document.getElementById('finish-screen');
-        const continueBtn = document.getElementById('continue-btn');
-        let currentQuestionIndex = 0;
-
-        
-        const ad = document.getElementById('ad');
-        ad.style.display = 'none';
-
-        //load currentQuestionIndex from localStorage
-        if (localStorage.getItem('currentQuestionIndex')) {
-            currentQuestionIndex = parseInt(localStorage.getItem('currentQuestionIndex'));
-        }
-        currentQuestionIndex -=1; 
-
-
-        const answers = [];
-        let currentInput = '';
-
-        finishedBtn.style.display = 'none';
-
-
-        function updateInputBlocks(value, answer, inputContainer) {
-            inputContainer.innerHTML = '';
-            for (let i = 0; i < answer.length; i++) {
-                const block = document.createElement('span');
-                block.textContent = value[i] || '';
-                if (i === value.length) {
-                    block.classList.add('currentBlock');
+                // console.log(`Fetch Error ${error}`)
+                console.log(
+                    `Fetch Error ${error}: ${error.message}\nURL: ${apiUrl}\nStatus: ${error.response?.status}`
+                );
+                const quizContainer = document.getElementById("quiz");
+                if (selectedLang === "de") {
+                    quizContainer.innerHTML =
+                        "Die Campus Rallye konnte nicht geladen werden. Stelle sicher dass du im Bayern Wlan bist und nicht in eduroam.";
+                } else {
+                    quizContainer.innerHTML =
+                        "The Campus Rallye could not be loaded. Make sure you are in Bayern Wlan and not in eduroam.";
                 }
-                inputContainer.appendChild(block);
+            }
+        }
 
+        function setup() {
+            setupElements();
+            setupButtonsWithDataText();
+            setupTextInput();
+            loadIntro();
+            // loadNextQuestion(); // REMOVE THIS
+        }
+
+        function setupElements() {
+            tryAgainBtn.addEventListener("click", () => {
+                //    allert ask if you want to delete
+                if (confirm(tryAgainText)) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            });
+
+            checkBtn.addEventListener("click", () => {
+                saveAnswerToLocalStorage(currentQuestionIndex);
+
+                const currentInput = blocksArray
+                    .map((block) => block.textContent)
+                    .join("");
+
+                const isCorrect =
+                    currentInput.trim().toLowerCase() ===
+                    questions[currentQuestionIndex].answer.toLowerCase();
+
+                const wasCoorectBefore =
+                    questionsAnsweredCorrect[currentQuestionIndex];
+
+                updateAnswerStatus(currentQuestionIndex, isCorrect);
+                if (isCorrect) {
+                    // console.log("correct");
+
+                    if (wasCoorectBefore) {
+                        loadNextQuestion();
+                        return;
+                    }
+
+                    loadCorrectText(currentQuestionIndex);
+                } else {
+                    // console.log("incorrect");
+                    const maxFalseCounter = 3;
+                    addFalseCounter(currentQuestionIndex);
+                    const falseCounter = getFalseCounter();
+                    const countersLeft = maxFalseCounter - falseCounter;
+
+                    const feedback = document.querySelector(".feedback");
+                    feedback.style.visibility = "visible";
+                    feedback.textContent = getWrongText(countersLeft);
+
+                    if (countersLeft <= 0) {
+                        loadNextQuestion();
+                    }
+                }
+            });
+            prevBtn.addEventListener("click", () => {
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    loadQuestion(currentQuestionIndex);
+                }
+            });
+            // ad.style.display = "none";
+            // finishedBtn.style.display = "none";
+        }
+
+        function setupButtonsWithDataText() {
+            // link-text
+            document.getElementById("link-text").innerHTML = data["link-text"];
+            document.getElementById("prev-btn").innerHTML = data["prev-btn"];
+            document.getElementById("check-btn").innerHTML = data["check-btn"];
+            document.getElementById("finished-btn").innerHTML =
+                data["finished-btn"];
+            document.getElementById("continue-btn").innerHTML =
+                data["continue-btn"];
+            document.getElementById("try-again-btn").innerHTML =
+                data["try-again-btn"];
+
+            tryAgainText = data["try-again-text"];
+        }
+        function setupTextInput() {
+            // console.log('setupDummyInput');
+            dummyInput = document.createElement("input");
+            dummyInput.value = " ";
+            dummyInput.style.opacity = 0;
+            dummyInput.style.position = "absolute";
+            document.body.appendChild(dummyInput);
+            dummyInput.addEventListener("input", (e) => {
+                onInput(e);
+                if (dummyInput.value.length == 0) {
+                    dummyInput.value = " ";
+                }
+            });
+
+            dummyInput.addEventListener("keydown", (e) => {
+                //enter
+                if (e.keyCode === 13) {
+                    e.preventDefault();
+                    checkBtn.click();
+                }
+            });
+
+            //on lose focus set timer to focus again
+            dummyInput.addEventListener("blur", () => {
+                setTimeout(() => {
+                    showKeyboardCaptureInput();
+                }, 100);
+            });
+            showKeyboardCaptureInput();
+        }
+
+        function createInputBoxes(question, blockContainer) {
+            blocksArray = [];
+            const questionLength = question.answer.length;
+            for (let i = 0; i < questionLength; i++) {
+                const block = document.createElement("span");
+                block.blockIndex = i;
+                block.textContent = "";
+
+                block.addEventListener("click", function () {
+                    setCurrentBlockIndex(this.blockIndex);
+                    dummyInput.focus();
+                });
+
+                blockContainer.appendChild(block);
+                blocksArray.push(block);
             }
         }
-        function handleInputEvent(input, question, inputContainer, feedback) {
-            const value = input.value;
-            currentInput = input.value;
-            if (value.length > question.answer.length) {
-                input.value = value.slice(0, question.answer.length);
-            }
-            updateInputBlocks(input.value, question.answer, inputContainer);
-            // feedback.textContent = '';
+
+        function showKeyboardCaptureInput() {
+            dummyInput.focus();
         }
+
+        let currentBlockIndex = 0;
+
+        function setCurrentBlockText(text) {
+            const currentBlock = blocksArray[currentBlockIndex];
+            currentBlock.textContent = text;
+        }
+        function getCurrentBlockText() {
+            const currentBlock = blocksArray[currentBlockIndex];
+            return currentBlock.textContent;
+        }
+        function activateNextBlock() {
+            if (currentBlockIndex + 1 < blocksArray.length) {
+                currentBlockIndex++;
+                setCurrentBlockIndex(currentBlockIndex);
+            }
+        }
+        function activatePrevBlock() {
+            if (currentBlockIndex > 0) {
+                currentBlockIndex--;
+                setCurrentBlockIndex(currentBlockIndex);
+            }
+        }
+        function setCurrentBlockIndex(index) {
+            // console.log('setCurrentBlockIndex', index);
+            currentBlockIndex = index;
+            showCurrentBlock();
+        }
+
+        function showCurrentBlock() {
+            blocksArray.forEach((block, index) => {
+                if (index === currentBlockIndex) {
+                    block.classList.add("currentBlock");
+                } else {
+                    block.classList.remove("currentBlock");
+                }
+            });
+        }
+
+        function onInput(event) {
+            // console.log("onInput", event);
+
+            const isDelete = event.inputType === "deleteContentBackward";
+            if (isDelete) {
+                const currentBlockText = getCurrentBlockText();
+
+                // if (currentBlockText == '') {
+                // activatePrevBlock();
+                // }
+                setCurrentBlockText("");
+                activatePrevBlock();
+                // setCurrentBlockText('');
+            } else {
+                // console.log('event', event);
+
+                const eventData = event.data || "";
+                const eventIsLetter = eventData.match(/[a-zA-ZäöüÄÖÜß]/i);
+
+                // console.log('eventIsLetter', eventIsLetter);
+                if (eventIsLetter) {
+                    //check if index is bigger than array length
+                    if (currentBlockIndex < blocksArray.length) {
+                        // console.log('currentBlockIndex', currentBlockIndex);
+                        const currentBlockFound = blocksArray[currentBlockIndex];
+                        // console.log('currentBlockFound', currentBlockFound);
+                        currentBlockFound.textContent = eventData;
+                        currentBlockFound.classList.remove("currentBlock");
+
+                        if (currentBlockIndex + 1 < blocksArray.length) {
+                            currentBlockIndex++;
+                        }
+
+                        const nextBlock = blocksArray[currentBlockIndex];
+                        nextBlock.classList.add("currentBlock");
+                    }
+                }
+            }
+        }
+
+        // Function to get URL parameters
+        function getLanguage() {
+            const param = "lang";
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param) || "de";
+        }
+
+        // Function to update the URL without reloading the page
+        function updateURL(lang) {
+            const newUrl = `${window.location.pathname}?lang=${lang}`;
+            window.history.pushState({ path: newUrl }, "", newUrl);
+        }
+
+        // Function to fetch data based on selected language
+
+        function updateAnswerStatus(questionIndex, isCorrect) {
+            // console.log("questionIndex", questionIndex, "isCorrect", isCorrect);
+            questionsAnsweredCorrect[questionIndex] = isCorrect;
+
+            localStorage.setItem(
+                "questionsAnsweredCorrect",
+                JSON.stringify(questionsAnsweredCorrect)
+            );
+        }
+
+        function loadAnswerFromLocalStorage(index) {
+            const savedAnswer = localStorage.getItem("input" + index) || "";
+            if (questionsAnsweredCorrect[index]) {
+                for (let i = 0; i < savedAnswer.length; i++) {
+                    blocksArray[i].textContent = savedAnswer[i];
+                }
+                blocksArray.forEach((block) => block.classList.add("correct"));
+            }
+        }
+
+        function saveAnswerToLocalStorage(index) {
+            const currentInput = blocksArray
+                .map((block) => block.textContent)
+                .join("");
+            localStorage.setItem("input" + index, currentInput);
+        }
+
         function loadQuestion(index) {
-            localStorage.setItem('currentQuestionIndex', index);
+            finishedBtn.style.display = "none";
+            localStorage.setItem("currentQuestionIndex", index);
 
-
-            quizContainer.innerHTML = '';
+            quizContainer.innerHTML = "";
             const question = questions[index];
-            const questionDiv = document.createElement('div');
-            questionDiv.classList.add('question', 'active');
-            const title = document.createElement('h2');
-            title.textContent = `Frage ${index+1}`;
-            const text = document.createElement('p');
+            const questionDiv = document.createElement("div");
+            questionDiv.classList.add("question", "active");
+            const title = document.createElement("h2");
+            title.textContent = data["question"] + ` ${index + 1}`;
+            const text = document.createElement("p");
             text.textContent = question.text;
-            const input = document.createElement('input');
-            input.type = 'text';
-            input.id = index;
-            input.placeholder = 'Type your answer here';
-            input.value = localStorage.getItem('input'+index) || '';
-            input.classList.add('text-input');
-            input.addEventListener('blur', () => {
-                const currentBlockFound = document.querySelector('.currentBlock');
+            const textInput = document.createElement("input");
+            textInput.type = "text";
+            textInput.id = "text-input";
+            textInput.placeholder = "Type your answer here";
+            textInput.value = localStorage.getItem("input" + index) || "";
+
+            textInput.addEventListener("blur", () => {
+                localStorage.setItem("input" + index, textInput.value);
+            });
+
+            // textInput.classList.add('text-input');
+            textInput.addEventListener("blur", () => {
+                const currentBlockFound = document.querySelector(".currentBlock");
                 if (currentBlockFound) {
-                    currentBlockFound.classList.remove('currentBlock');
+                    currentBlockFound.classList.remove("currentBlock");
                 }
             });
-            const inputContainer = document.createElement('div');
-            inputContainer.classList.add('input-container');
-            const textInputAndBlocks = document.createElement('div');
-            textInputAndBlocks.appendChild(input);
-            textInputAndBlocks.appendChild(inputContainer);
-            const feedback = document.createElement('p');
-            feedback.classList.add('feedback');
-            feedback.style.visibility = 'hidden';
-            feedback.textContent = "Leider falsch. Probiere es nochmal (3 Versuche übrig)";
-            input.addEventListener('input', () => handleInputEvent(input, question, inputContainer, feedback));
-            input.addEventListener('blur', () => {
-                localStorage.setItem('input'+index, input.value);
-            });
+            const blockContainer = document.createElement("div");
+            blockContainer.classList.add("block-container");
+
+            createInputBoxes(question, blockContainer);
+
+            const textInputAndBlocks = document.createElement("div");
+
+            textInputAndBlocks.classList.add("text-input-and-blocks");
+            // textInputAndBlocks.appendChild(textInput);
+            textInputAndBlocks.appendChild(blockContainer);
+
+            const feedback = document.createElement("p");
+            feedback.classList.add("feedback");
+            feedback.style.visibility = "hidden";
+            feedback.textContent = getWrongText();
+
             questionDiv.appendChild(title);
             questionDiv.appendChild(text);
             questionDiv.appendChild(textInputAndBlocks);
             questionDiv.appendChild(feedback);
             quizContainer.appendChild(questionDiv);
-            input.dispatchEvent(new Event('input'));
+            textInput.dispatchEvent(new Event("input"));
 
+            setCurrentBlockIndex(0);
+            loadAnswerFromLocalStorage(index);
 
-            console.log('currentQuestionIndex', currentQuestionIndex);
+            // console.log("currentQuestionIndex", currentQuestionIndex);
 
             if (currentQuestionIndex === 0) {
-                prevBtn.style.visibility = 'hidden';
+                prevBtn.style.visibility = "hidden";
             } else {
-                prevBtn.style.visibility = 'visible';
+                prevBtn.style.visibility = "visible";
             }
-            if (currentQuestionIndex === questions.length - 1) {
-                // checkBtn.style.visibility = 'hidden';
-                checkBtn.style.display = 'none';
-                showFinishButton();
-            } else {
-                // checkBtn.style.visibility = 'visible';
-                checkBtn.style.display = 'block';
-                continueBtn.style.display = 'none';
-            }
+            checkBtn.style.display = "block";
+            continueBtn.style.display = "none";
+            // }
         }
-        function getSolutionChars(){
-
-            let current =  data["solutionText"];
+        function getSolutionChars() {
+            let current = data["solutionText"];
 
             // replace space with doube space char
-            current = current.replace(/ /g, spaceChar+spaceChar);
-
-
+            current = current.replace(/ /g, spaceChar + spaceChar);
 
             questions.forEach((question, index) => {
-                if(questionsAnsweredCorrect[index] == false){
-
+                if (questionsAnsweredCorrect[index] == false) {
                     const letter = question.letter;
 
                     // current
-                    // replace first letter orrurence of in current with _ 
+                    // replace first letter orrurence of in current with _
                     const index = current.indexOf(letter);
                     if (index !== -1) {
-                        current = current.substring(0, index) + '_'+spaceChar + current.substring(index + 1);
+                        current =
+                            current.substring(0, index) +
+                            "_" +
+                            spaceChar +
+                            current.substring(index + 1);
                     }
-                    // space char in html is &nbsp;
-                    
                 }
             });
-            
+
             return current;
         }
 
-        function makeBold(text){
-            return `<b>${text}</b>`;
+        function makeBold(text) {
+            // return `<b>${text}</b>`;
+            return addElement(text, "b");
         }
+
+        function addElement(text, elementName) {
+            return `<${elementName}>${text}</${elementName}>`;
+        }
+
         function showFinishButton() {
+            // console.log("showFinishButton");
 
+            checkBtn.style.display = "none";
 
-            finishedBtn.style.display = 'block';
-            continueBtn.style.display = 'none';
-            finishedBtn.addEventListener('click', () => {
-
-                const countHowManyCorrect = Object.values(questionsAnsweredCorrect).filter(Boolean).length;
+            finishedBtn.style.display = "block";
+            continueBtn.style.display = "none";
+            finishedBtn.addEventListener("click", () => {
+                const countHowManyCorrect = Object.values(
+                    questionsAnsweredCorrect
+                ).filter(Boolean).length;
                 const countHowManyTotal = questions.length;
 
                 const loesungswortBuchstaben = getSolutionChars();
 
-                let text =  countHowManyCorrect +"/"+ countHowManyTotal;
+                let text = countHowManyCorrect + "/" + countHowManyTotal;
                 text = makeBold(text);
 
-                const realFinalText = data["finalText"].replace("[REPLACE_1]",text ).replace("[REPLACE_2]", loesungswortBuchstaben);
+                const realFinalText = data["finalText"]
+                    .replace("[REPLACE_1]", text)
+                    .replace("[REPLACE_2]", loesungswortBuchstaben);
                 quizContainer.innerHTML = realFinalText;
-                checkBtn.style.display = 'none';
-                prevBtn.style.display = 'none';
-                finishedBtn.style.display = 'none';
+                checkBtn.style.display = "none";
+                prevBtn.style.display = "none";
+                finishedBtn.style.display = "none";
 
-                ad.style.display = 'block';
+                ad.style.display = "block";
 
+                tryAgainBtn.style.display = "block";
             });
         }
 
-        function loadNextQuestion(){
+        function loadNextQuestion() {
+            // console.log("loadNextQuestion with currentQuestionIndex", currentQuestionIndex);
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
                 loadQuestion(currentQuestionIndex);
+                // finishedBtn.style.display = "none";
             } else {
-                alert('You have completed the quiz!');
+                showFinishButton();
             }
         }
 
+        function addFalseCounter(currentQuestionIndex) {
+            falseCounter[currentQuestionIndex] = falseCounter[currentQuestionIndex]
+                ? falseCounter[currentQuestionIndex] + 1
+                : 1;
 
-        function addFalseCounter(currentQuestionIndex){
-            falseCounter[currentQuestionIndex] = falseCounter[currentQuestionIndex] ? falseCounter[currentQuestionIndex] + 1 : 1;
-
-            console.log('falseCounter', falseCounter);
+            // console.log("falseCounter", falseCounter);
         }
-        function getFalseCounter(){
+        function getFalseCounter() {
             return falseCounter[currentQuestionIndex] || 0;
         }
 
-        checkBtn.addEventListener('click', () => {
-
-            const isCorrect = currentInput.trim().toLowerCase() === questions[currentQuestionIndex].answer.toLowerCase();
-            updateAnswerStatus(currentQuestionIndex, isCorrect);
-            if (isCorrect) {
-                console.log('correct');
-
-                
-                loadCorrectText(currentQuestionIndex);
-                // loadNextQuestion();
-            } else {
-                console.log('incorrect');
-                const maxFalseCounter = 3;
-                addFalseCounter(currentQuestionIndex);
-                const falseCounter = getFalseCounter();
-                const countersLeft = maxFalseCounter - falseCounter;
-              
-                const feedback = document.querySelector('.feedback');
-                feedback.style.visibility = 'visible';
-                feedback.textContent = `Leider falsch. Probiere es nochmal (${countersLeft} Versuche übrig)`;
-
-                
-           
-                
-                if (countersLeft <= 0) {
-                   loadNextQuestion();
-                }
+        function getWrongText(countLeft = 3) {
+            if (countLeft < 0) {
+                countLeft = 0;
             }
+            return data["wrong-text"].replace("[REPLACE_1]", countLeft);
+        }
 
-
-         
-        });
-        prevBtn.addEventListener('click', () => {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                loadQuestion(currentQuestionIndex);
-            }
-        });
-        function loadCorrectText(index){
+        function loadCorrectText(index) {
             const question = questions[index];
-
-
-            quizContainer.innerHTML = `<h2>${question.correctText}</h2> <p> Durch deine Antwort <b> ${question.answer}</b> hast du den Buchstaben <b> ${question.letter} </b> freigeschaltet</p>`;
-            
-            checkBtn.style.display = 'none';
-            continueBtn.style.display = 'block';
-            continueBtn.addEventListener('click', () => {
+            const correctText = data["correct-text"]
+                .replace("[REPLACE_1]", makeBold(question.answer))
+                .replace("[REPLACE_2]", makeBold(question.letter));
+            let quizContainerInnerHTML = `<b>${question.correctText}</b> <p>${correctText}</p>`;
+            quizContainer.innerHTML = quizContainerInnerHTML;
+            checkBtn.style.display = "none";
+            continueBtn.style.display = "block";
+            continueBtn.addEventListener("click", () => {
                 loadQuestion(currentQuestionIndex);
-                checkBtn.style.display = 'block';
+                checkBtn.style.display = "block";
                 // nextBtn.style.display = 'none';
             });
-
-
-
         }
 
         function loadIntro() {
-            console.log("loadIntro")
+            // console.log("loadIntro");
 
-            document.getElementById("bottom-buttons").style.visibility = ""
+            document.getElementById("bottom-buttons").style.visibility = "";
 
             questions.forEach((question, index) => {
-    const questionIndex = index;
-    if (!questionsAnsweredCorrect.hasOwnProperty(questionIndex)) {
-        questionsAnsweredCorrect[questionIndex] = false; // False implies unanswered or incorrect
-    }
-});
-
-
+                const questionIndex = index;
+                if (!questionsAnsweredCorrect.hasOwnProperty(questionIndex)) {
+                    questionsAnsweredCorrect[questionIndex] = false; // False implies unanswered or incorrect
+                }
+            });
 
             let introText = data["intro"].replace("[REPLACE_1]", questions.length);
-
-    quizContainer.innerHTML = introText;
-
-    checkBtn.style.display = 'none';
-    prevBtn.style.visibility = 'hidden';
-
-    continueBtn.addEventListener('click', () => {
-        loadNextQuestion();
-    });
-}
-
-
-
-
+            quizContainer.innerHTML = introText;
+            checkBtn.style.display = "none";
+            prevBtn.style.visibility = "hidden";
+            continueBtn.addEventListener("click", () => {
+                loadNextQuestion();
+            });
+        }
     </script>
 </body>
+
 </html>

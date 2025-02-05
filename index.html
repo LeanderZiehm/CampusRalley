@@ -12,18 +12,17 @@
     <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400&display=swap" rel="stylesheet" />
 </head>
 
+
 <body>
-    <img src="thd-logo.png" style="
+    <img id="logo-image" src="" style="
         height: 10vh;
         position: absolute;
         top: 0px;
         left: 0px;
         padding: 1vw;
-      " alt="THD Logo" class="logo" />
+      " alt=""/>
 
-    <button id="try-again-btn" class="btn">
-        Nochmal
-    </button>
+    <button id="try-again-btn" class="btn">Nochmal</button>
 
     <div class="container">
         <div id="quiz">Starting...</div>
@@ -38,8 +37,8 @@
                 <span id="link-text">Du "brennst" für unsere Hochschule und möchtest mehr
                     erfahren?</span>
 
-                <a href="https://www.th-deg.de" target="_blank">
-                    <img src="thd-logo.png" alt="Website Icon" style="width: 40px; height: 40px; margin-right: 5px" />
+                <a id="web-link"  href="https://www.th-deg.de" target="_blank" style="margin-left: 15px;" >
+                    <img src="thd-logo.png" id="logo-image-small" alt="Website Icon" style=" height: 40px; margin-right: 5px" />
                 </a>
                 <a href="https://www.instagram.com/th_deggendorf/" target="_blank">
                     <img src="instagram.png" alt="Instagram Icon" style="width: 40px; height: 40px; margin-right: 5px" />
@@ -62,10 +61,12 @@
         }
     </style>
 
+    <script src="effects.js" ></script>
 
     <script>
+   
+        
         const linkBase = "https://campus-rallye-backend.vercel.app/";
-
         let currentQuestionIndex = 0;
         let data;
         let questions;
@@ -73,6 +74,7 @@
         let tryAgainText;
         let blocksArray = [];
         const answers = [];
+        let language = getLanguage();
 
         const quizContainer = document.getElementById("quiz");
         const checkBtn = document.getElementById("check-btn");
@@ -83,37 +85,149 @@
         const tryAgainBtn = document.getElementById("try-again-btn");
         const ad = document.getElementById("ad");
 
-
-        fetchData();
-
-        // localStorage.clear();
-
         const falseCounter = {};
         let sawIntro = false;
-
         const spaceChar = "&nbsp;";
+
+        const SAVE_PROGRESS = true;
+
+        if (!SAVE_PROGRESS) {
+            localStorage.clear();
+        }
 
         const questionsAnsweredCorrect =
             JSON.parse(localStorage.getItem("questionsAnsweredCorrect")) || {};
 
 
-        //load currentQuestionIndex from localStorage
-        if (localStorage.getItem("currentQuestionIndex")) {
-            currentQuestionIndex = parseInt(
-                localStorage.getItem("currentQuestionIndex")
-            );
+
+        function main(){
+            //load currentQuestionIndex from localStorage
+            if (localStorage.getItem("currentQuestionIndex")) {
+                currentQuestionIndex = parseInt(
+                    localStorage.getItem("currentQuestionIndex")
+                );
+            }
+            currentQuestionIndex -= 1;
+
+            fetchData();
         }
-        currentQuestionIndex -= 1;
 
-        // let currentInput = '';
+        main();
 
 
-        function setup() {
+        async function fetchData() {
+            const apiUrl = `${linkBase}${language}`;
+            try {
+                // throw new Error('Failed to fetch data: Error message');
+                const response = await fetch(apiUrl);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                data = await response.json();
+                questions = data["questions"];
+                setupAfterFetchData();
+            } catch (error) {
+                // console.log(`Fetch Error ${error}`)
+                console.log(
+                    `Fetch Error ${error}: ${error.message}\nURL: ${apiUrl}\nStatus: ${error.response?.status}`
+                );
+                const quizContainer = document.getElementById("quiz");
+                if (language === "de") {
+                    quizContainer.innerHTML =
+                        "Die Campus Rallye konnte nicht geladen werden. Stelle sicher dass du im Bayern Wlan bist und nicht in eduroam.";
+                } else {
+                    quizContainer.innerHTML =
+                        "The Campus Rallye could not be loaded. Make sure you are in Bayern Wlan and not in eduroam.";
+                }
+            }
+        }
+
+        function setupAfterFetchData() {
+            setupDataStuff();
+            setupEffects();
             setupElements();
+            setupDITorTHD();
             setupButtonsWithDataText();
             setupTextInput();
             loadIntro();
             // loadNextQuestion(); // REMOVE THIS
+        }
+
+        function setupDataStuff() {
+
+            document.getElementById("web-link").href = data["web-link"];
+            document.title = data["tab-title"];
+        //    web - link
+        }
+
+        function setupEffects(){
+
+            let useConfetti = true;
+            const useEffectText = data["use-effects"];
+
+            if (language === "de") {
+                useConfetti = useEffectText === "ja";
+            } else {
+                useConfetti = useEffectText === "yes";
+            }
+        
+            imported_effects_setup(useConfetti);
+        }
+
+        function callEffect(){
+            imported_effects_callConfetti();
+        }
+
+
+
+        function setupDITorTHD() {
+            const urlContainsDIT = checkURLIfContainsDIT();
+            const logos = document.querySelectorAll(".logo");
+
+
+
+
+            let logoSrc = "thd-logo.png";
+            let logoSmallsrc = "thd-logo-small.png";
+
+            if (urlContainsDIT || language === "en") {
+                logoSrc = "dit-logo.png";
+                logoSmallsrc = "dit-logo-small.png";
+                            //set background image 
+                const body = document.querySelector("body");
+                body.style.backgroundSize = "cover";
+                body.style.backgroundRepeat = "no-repeat";
+                body.style.backgroundAttachment = "fixed";
+                body.style.backgroundPosition = "center";
+                const imageLink = "background.jpg"
+                //add blur effect on immage  filter: blur(10px); ::before
+                // body.style.backgroundImage = `url(${data["background-image"]})`;
+                body.style.backgroundImage = `url(${imageLink})`;
+
+
+                document.getElementById("logo-image").style.filter = "brightness(0) invert(1) drop-shadow(2px 2px 0 black)";
+
+
+            } 
+
+            document.getElementById("logo-image").src = logoSrc;
+            document.getElementById("logo-image-small").src = logoSmallsrc;
+
+
+
+
+
+        }
+        function setupScripts() {
+            // console.log('setupScripts');
+            document.addEventListener("keydown", (e) => {
+                if (e.key === "ArrowRight") {
+                    checkBtn.click();
+                }
+                if (e.key === "ArrowLeft") {
+                    prevBtn.click();
+                }
+            });
         }
 
         function setupElements() {
@@ -123,8 +237,59 @@
                     localStorage.clear();
                     location.reload();
                 }
+            });
 
+            checkBtn.addEventListener("click", () => {
+                saveAnswerToLocalStorage(currentQuestionIndex);
 
+                const currentInput = blocksArray
+                    .map((block) => block.textContent)
+                    .join("");
+
+                const isCorrect =
+                    currentInput.trim().toLowerCase() ===
+                    questions[currentQuestionIndex].answer.toLowerCase();
+
+                const wasCoorectBefore =
+                    questionsAnsweredCorrect[currentQuestionIndex];
+
+                updateAnswerStatus(currentQuestionIndex, isCorrect);
+                if (isCorrect) {
+                    // console.log("correct");
+                    
+                    if (wasCoorectBefore) {
+                        loadNextQuestion();
+                        return;
+                    }
+                    callEffect();
+                    loadCorrectText(currentQuestionIndex);
+                } else {
+                    // console.log("incorrect");
+                    const maxFalseCounter = 3;
+                    addFalseCounter(currentQuestionIndex);
+                    const falseCounter = getFalseCounter();
+                    const countersLeft = maxFalseCounter - falseCounter;
+
+                    const feedback = document.querySelector(".feedback");
+
+                    if(feedback){
+                        feedback.style.visibility = "visible";
+                        feedback.textContent = getWrongText(countersLeft);
+                    }else{
+                        //timestatmp
+                        console.log('feedback not found', new Date().getTime());
+                    }
+                 
+                    if (countersLeft <= 0) {
+                        loadNextQuestion();
+                    }
+                }
+            });
+            prevBtn.addEventListener("click", () => {
+                if (currentQuestionIndex > 0) {
+                    currentQuestionIndex--;
+                    loadQuestion(currentQuestionIndex);
+                }
             });
             // ad.style.display = "none";
             // finishedBtn.style.display = "none";
@@ -175,6 +340,11 @@
             showKeyboardCaptureInput();
         }
 
+        function checkURLIfContainsDIT() {
+            const url = window.location.href;
+            const urlContainsDIT = url.includes("dit");
+            return urlContainsDIT;
+        }
 
         function createInputBoxes(question, blockContainer) {
             blocksArray = [];
@@ -193,8 +363,6 @@
                 blocksArray.push(block);
             }
         }
-
-
 
         function showKeyboardCaptureInput() {
             dummyInput.focus();
@@ -292,34 +460,6 @@
         }
 
         // Function to fetch data based on selected language
-        async function fetchData() {
-            const selectedLang = getLanguage();
-            const apiUrl = `${linkBase}${selectedLang}`;
-            try {
-                // throw new Error('Failed to fetch data: Error message');
-                const response = await fetch(apiUrl);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                data = await response.json();
-                questions = data["questions"];
-                setup();
-            } catch (error) {
-                // console.log(`Fetch Error ${error}`)
-                console.log(
-                    `Fetch Error ${error}: ${error.message}\nURL: ${apiUrl}\nStatus: ${error.response?.status}`
-                );
-                const quizContainer = document.getElementById("quiz");
-                if (selectedLang === "de") {
-                    quizContainer.innerHTML =
-                        "Die Campus Rallye konnte nicht geladen werden. Stelle sicher dass du im Bayern Wlan bist und nicht in eduroam.";
-                } else {
-                    quizContainer.innerHTML =
-                        "The Campus Rallye could not be loaded. Make sure you are in Bayern Wlan and not in eduroam.";
-                }
-            }
-        }
-
 
         function updateAnswerStatus(questionIndex, isCorrect) {
             // console.log("questionIndex", questionIndex, "isCorrect", isCorrect);
@@ -349,7 +489,6 @@
         }
 
         function loadQuestion(index) {
-
             finishedBtn.style.display = "none";
             localStorage.setItem("currentQuestionIndex", index);
 
@@ -451,7 +590,6 @@
         }
 
         function showFinishButton() {
-
             // console.log("showFinishButton");
 
             checkBtn.style.display = "none";
@@ -459,6 +597,9 @@
             finishedBtn.style.display = "block";
             continueBtn.style.display = "none";
             finishedBtn.addEventListener("click", () => {
+
+                imported_effects_callFireworks();
+
                 const countHowManyCorrect = Object.values(
                     questionsAnsweredCorrect
                 ).filter(Boolean).length;
@@ -484,7 +625,6 @@
         }
 
         function loadNextQuestion() {
-
             // console.log("loadNextQuestion with currentQuestionIndex", currentQuestionIndex);
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
@@ -513,51 +653,6 @@
             return data["wrong-text"].replace("[REPLACE_1]", countLeft);
         }
 
-        checkBtn.addEventListener("click", () => {
-            saveAnswerToLocalStorage(currentQuestionIndex);
-
-            const currentInput = blocksArray
-                .map((block) => block.textContent)
-                .join("");
-
-            const isCorrect =
-                currentInput.trim().toLowerCase() ===
-                questions[currentQuestionIndex].answer.toLowerCase();
-
-            const wasCoorectBefore = questionsAnsweredCorrect[currentQuestionIndex];
-
-            updateAnswerStatus(currentQuestionIndex, isCorrect);
-            if (isCorrect) {
-                // console.log("correct");
-
-                if (wasCoorectBefore) {
-                    loadNextQuestion();
-                    return;
-                }
-
-                loadCorrectText(currentQuestionIndex);
-            } else {
-                // console.log("incorrect");
-                const maxFalseCounter = 3;
-                addFalseCounter(currentQuestionIndex);
-                const falseCounter = getFalseCounter();
-                const countersLeft = maxFalseCounter - falseCounter;
-
-                const feedback = document.querySelector(".feedback");
-                feedback.style.visibility = "visible";
-                feedback.textContent = getWrongText(countersLeft);
-
-                if (countersLeft <= 0) {
-                    loadNextQuestion();
-                }
-            }
-        });
-        prevBtn.addEventListener("click", () => {
-            if (currentQuestionIndex > 0) {
-                currentQuestionIndex--;
-                loadQuestion(currentQuestionIndex);
-            }
-        });
         function loadCorrectText(index) {
             const question = questions[index];
             const correctText = data["correct-text"]
