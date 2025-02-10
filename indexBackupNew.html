@@ -14,73 +14,15 @@
 
 
 <body>
+    <img id="logo-image" src="" style="
+        height: 10vh;
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        padding: 1vw;
+      " alt="" />
 
-        <style>
-            body{
-                /* font-family: 'Saira', sans-serif; */
-                margin: 0;
-                padding: 0;
-                /* background-color: #f0f0f0; */
-            }
-            #try-again-btn {
-                position: absolute;
-                top: 1vw;
-                right: 1vw;
-                display: none;
-            }
-        
-            #finished-btn {
-                display: none;
-            }
-
-            header{
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                /* z-index: 100; */
-            }
-        
-            .header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                /* background-color: #33333344; */
-                width: 100%;
-                /* height: auto; */
-                padding: 10px 20px;
-            }
-        </style>
-
-        <header>
-                <div class="header">
-                    <img id="logo-image" src="" style="
-                            height: 5vh;
-                          " alt="" />
-                
-                    <!-- font-weight: 400;
-                    text-align: left;
-                    font-family: 'Saira', sans-serif;
-                    color: #428bca;
-                    font-size: 1.25rem;
-                    line-height: inherit;
-                    white-space: nowrap;
-                    box-sizing: border-box;
-                    vertical-align: middle;
-                    border: 0;
-                    max-width: 380px !important;
-                    display: block;
-                    transform: scale(0.7);
-                    margin-left: -30px; -->
-                
-                    <button id="try-again-btn" class="btn">Nochmal</button>
-                
-                </div>
-
-
-        </header>
-
-
+    <button id="try-again-btn" class="btn">Nochmal</button>
 
     <div class="container">
         <div id="quiz">Starting...</div>
@@ -106,7 +48,18 @@
         </div>
     </div>
 
+    <style>
+        #try-again-btn {
+            position: absolute;
+            top: 1vw;
+            right: 1vw;
+            display: none;
+        }
 
+        #finished-btn {
+            display: none;
+        }
+    </style>
 
     <script src="effects.js"></script>
 
@@ -210,13 +163,13 @@
         function setupEffects() {
 
             let useConfetti = true;
-            // const useEffectText = data["use-effects"];
+            const useEffectText = data["use-effects"];
 
-            // if (language === "de") {
-            //     useConfetti = useEffectText === "ja";
-            // } else {
-            //     useConfetti = useEffectText === "yes";
-            // }
+            if (language === "de") {
+                useConfetti = useEffectText === "ja";
+            } else {
+                useConfetti = useEffectText === "yes";
+            }
 
             imported_effects_setup(useConfetti);
         }
@@ -240,30 +193,24 @@
             if (urlContainsDIT || language === "en") {
                 logoSrc = "dit-logo.png";
                 logoSmallsrc = "dit-logo-small.png";
+                //set background image 
+                const body = document.querySelector("body");
+                body.style.backgroundSize = "cover";
+                body.style.backgroundRepeat = "no-repeat";
+                body.style.backgroundAttachment = "fixed";
+                body.style.backgroundPosition = "center";
+                const imageLink = "background.jpg"
+                //add blur effect on immage  filter: blur(10px); ::before
+                // body.style.backgroundImage = `url(${data["background-image"]})`;
+                body.style.backgroundImage = `url(${imageLink})`;
+
+
+                document.getElementById("logo-image").style.filter = "brightness(0) invert(1) drop-shadow(2px 2px 0 black)";
+
 
             }
 
-
-
-            //set background image 
-
-            const body = document.querySelector("body");
-            body.style.backgroundSize = "cover";
-            body.style.backgroundRepeat = "no-repeat";
-            body.style.backgroundAttachment = "fixed";
-            body.style.backgroundPosition = "center";
-            const imageLink = "background.jpg"
-            body.style.backgroundImage = `url(${imageLink})`;
-            // document.getElementById("logo-image").style.filter = "brightness(0) invert(1) drop-shadow(2px 2px 0 black)";
-            document.getElementById("logo-image").style.filter = "brightness(0) invert(1)";
-
-
-
             document.getElementById("logo-image").src = logoSrc;
-            //size of logo
-            // document.getElementById("logo-image").style.height = "";
-
-
             document.getElementById("logo-image-small").src = logoSmallsrc;
 
 
