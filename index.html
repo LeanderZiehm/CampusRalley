@@ -23,9 +23,12 @@
                 /* background-color: #f0f0f0; */
             }
             #try-again-btn {
-                position: absolute;
-                top: 1vw;
-                right: 1vw;
+                margin-top: 0;
+                margin-right:  30px;
+                /* padding: 0; */
+                /* position: absolute; */
+                /* top: 1vw; */
+                /* right: 1vw; */
                 display: none;
             }
         
@@ -38,6 +41,8 @@
                 top: 0;
                 left: 0;
                 width: 100%;
+                margin: 0;
+                padding: 0;
                 /* z-index: 100; */
             }
         
@@ -45,7 +50,7 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                /* background-color: #33333344; */
+                background-color: #333333de;
                 width: 100%;
                 /* height: auto; */
                 padding: 10px 20px;
@@ -57,21 +62,6 @@
                     <img id="logo-image" src="" style="
                             height: 5vh;
                           " alt="" />
-                
-                    <!-- font-weight: 400;
-                    text-align: left;
-                    font-family: 'Saira', sans-serif;
-                    color: #428bca;
-                    font-size: 1.25rem;
-                    line-height: inherit;
-                    white-space: nowrap;
-                    box-sizing: border-box;
-                    vertical-align: middle;
-                    border: 0;
-                    max-width: 380px !important;
-                    display: block;
-                    transform: scale(0.7);
-                    margin-left: -30px; -->
                 
                     <button id="try-again-btn" class="btn">Nochmal</button>
                 
@@ -659,13 +649,14 @@
                 const countHowManyTotal = questions.length;
 
                 const loesungswortBuchstaben = getSolutionChars();
+                const solutionText = addElement(loesungswortBuchstaben, "h2");
 
-                let text = countHowManyCorrect + "/" + countHowManyTotal;
-                text = makeBold(text);
+                let howManyCorrectText = countHowManyCorrect + "/" + countHowManyTotal;
+                howManyCorrectText = makeBold(howManyCorrectText);
 
                 const realFinalText = data["finalText"]
-                    .replace("[REPLACE_1]", text)
-                    .replace("[REPLACE_2]", loesungswortBuchstaben);
+                    .replace("[REPLACE_1]", howManyCorrectText)
+                    .replace("[REPLACE_2]", solutionText);
                 quizContainer.innerHTML = realFinalText;
                 checkBtn.style.display = "none";
                 prevBtn.style.display = "none";
