@@ -1,15 +1,15 @@
 
 
-
+// console.log("effects.js loaded2");
 
 // Load the confetti effect if activated in the settings
-console.log("effects.js loaded");
+// console.log("effects.js loaded");
 
 let confettiLoaded = false;
 
 function imported_effects_setup(isConfeti) {
 
-    console.log("isConfeti: " + isConfeti);
+    // console.log("isConfeti: " + isConfeti);
 
     // tsparticles.js
 
@@ -32,7 +32,7 @@ function imported_effects_setup(isConfeti) {
 
 function onLoadFinished() {
 
-    console.log("effects.js onLoadFinished called");
+    // console.log("effects.js onLoadFinished called");
 
     confettiLoaded = true;
 
@@ -45,7 +45,10 @@ function imported_effects_callConfetti(){
     callConfetti();
 }
 
+let isFireWorkStillGoing = false;
+
 function imported_effects_callFireworks(){
+    isFireWorkStillGoing = true;
     callFireworks();
 }
 function callFireworks(){
@@ -61,6 +64,8 @@ function callFireworks(){
         const timeLeft = animationEnd - Date.now();
 
         if (timeLeft <= 0) {
+
+            isFireWorkStillGoing = false;
             return clearInterval(interval);
         }
 
@@ -85,7 +90,7 @@ function callFireworks(){
 
 function callConfetti() {
     
-    console.log("callConfetti called");
+    // console.log("callConfetti called");
 
     if (confettiLoaded) {
         confetti({

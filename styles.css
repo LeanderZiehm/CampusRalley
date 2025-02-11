@@ -74,10 +74,18 @@ header {
     font-weight: bold;
     background-color: #fff;
     z-index: 2;
+    user-select: none;
 }
 .block-container span.correct {
     background-color: #4caf50;
     color: #fff;
+    /*make unclickable*/
+    pointer-events: none;
+    user-select: none;
+        /* Prevents text selection */
+    cursor: default;
+        /* Changes cursor to default */
+    
 }
 .block-container span.incorrect {
     background-color: red;
@@ -85,7 +93,7 @@ header {
 }
 .btn {
     display: inline-block;
-    padding: 15px 25px;
+    padding: 15px 15px;
     /* font-size: 16px; */
     font-weight: bold;
     color: #fff;
@@ -118,9 +126,11 @@ header {
     margin-top: 30px;
     
 }
+
 #bottom-buttons {
     display: flex;
     justify-content: space-between;
+    
 }
 .currentBlock {
     border-color: var(--blue) !important;
