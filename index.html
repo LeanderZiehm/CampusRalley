@@ -568,7 +568,31 @@
         function getLanguage() {
             const param = "lang";
             const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param) || "de";
+
+            const languageParameter = urlParams.get(param)
+
+            const validLanguages = ["de", "en"];
+
+
+            if(!languageParameter){
+                if(checkURLIfContainsDIT()){
+                    return "en";
+                }else{
+                    return "de";
+                }
+            }
+
+
+
+            if (validLanguages.includes(languageParameter)) {
+                return languageParameter;
+            }
+            
+           
+
+
+
+      
         }
         // Function to update the URL without reloading the page
         function updateURL(lang) {
