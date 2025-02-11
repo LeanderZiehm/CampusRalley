@@ -86,7 +86,7 @@
     <script>
         const linkBase = "https://campus-rallye-backend.vercel.app/";
         let disableInput = false
-        let currentQuestionIndex = -1;
+        let currentQuestionIndex;
         let data;
         let questions;
         let dummyInput;
@@ -105,32 +105,44 @@
         let sawIntro = false;
         const spaceChar = "&nbsp;";
         const SAVE_PROGRESS = true;
-
-        
-
-
-// console.log("localStorage", localStorage);
-
-        const localStorageVersion = localStorage.getItem("version");
-
+        let questionsAnsweredCorrect = {};
         const version = "1.0.0";
 
-        if(!localStorageVersion || localStorageVersion != version){
-           clearLocalStorage();
+        function init(){
+
+
+            // console.log("init",localStorage, currentQuestionIndex);
+
+            const localStorageVersion = localStorage.getItem("version");
+            
+            if (!localStorageVersion || localStorageVersion != version) {
+                clearLocalStorage();
+            }
+            if (localStorage.getItem("language") != language) {
+                clearLocalStorage();
+            }
+
+
+            questionsAnsweredCorrect = JSON.parse(localStorage.getItem("questionsAnsweredCorrect")) || {};
+              
+            if (localStorage.getItem("currentQuestionIndex")) {
+                currentQuestionIndex = parseInt(
+                    localStorage.getItem("currentQuestionIndex")
+            );
+            }else{
+                currentQuestionIndex = -1;
+            }
         }
-
-        if (localStorage.getItem("language") != language) {
-            clearLocalStorage();
-        }
-
-
-
-
 
         function clearLocalStorage(){
-             localStorage.clear();
+            console.log("clearLocalStorage");
+            localStorage.clear();
             localStorage.setItem("version", version);
             localStorage.setItem("language", language);
+
+            if(data){
+                localStorage.setItem("randomize-question-order", data["randomize-question-order"]);
+            }
             //console.log("localStorage cleared");
         }
 
@@ -138,18 +150,9 @@
         if (!SAVE_PROGRESS) {
              clearLocalStorage();
         }
-        const questionsAnsweredCorrect =
-            JSON.parse(localStorage.getItem("questionsAnsweredCorrect")) || {};
+        
         function main() {
-            //load currentQuestionIndex from localStorage
-            if (localStorage.getItem("currentQuestionIndex")) {
-                currentQuestionIndex = parseInt(
-                    localStorage.getItem("currentQuestionIndex")
-                );
-            }
-            // currentQuestionIndex -= 1;
-
-            //console.log("currentQuestionIndex", currentQuestionIndex);
+            init();
             fetchData();
         }
         main();
@@ -162,6 +165,15 @@
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 data = await response.json();
+
+
+                if(localStorage.getItem("randomize-question-order") != data["randomize-question-order"]){ // this is dangeruse becasue if I dont save it to local storage it will infinite loop.
+                    console.log("randomize-question-order changed", localStorage.getItem("randomize-question-order"), data["randomize-question-order"]);
+                    clearLocalStorage();
+                    init();
+    
+                }
+
 
                 // console.log("data", data);
 
