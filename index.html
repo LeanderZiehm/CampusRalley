@@ -650,6 +650,10 @@
             localStorage.setItem("input" + index, currentInput);
         }
         function loadQuestion(index) {
+
+            // XXJUMP
+
+
             enableKeyboard();
 
             finishedBtn.style.display = "none";
@@ -713,8 +717,29 @@
             } else {
                 prevBtn.style.visibility = "visible";
             }
-            checkBtn.style.display = "block";
-            continueBtn.style.display = "none";
+
+            const alreadyHadThisQuesionCorrect = questionsAnsweredCorrect[index];
+
+
+            console.log("currentQuestionIndex", currentQuestionIndex, "questions.length", questions.length);
+            if (alreadyHadThisQuesionCorrect) {
+
+                if(currentQuestionIndex >= questions.length - 1){
+                    showFinishButton();
+                    console.log("showFinishButton");
+                    checkBtn.style.display = "none";
+                
+                }else{
+                    continueBtn.style.display = "block";
+                    checkBtn.style.display = "none";
+                }
+            }else{
+
+                checkBtn.style.display = "block";
+                continueBtn.style.display = "none";
+            }
+
+           
             // }
         }
         function getSolutionChars() {
@@ -824,7 +849,7 @@
             continueBtn.addEventListener("click", () => {
                 //console.log("continueBtn clicked", currentQuestionIndex);
                 loadQuestion(currentQuestionIndex);
-                checkBtn.style.display = "block";
+                // checkBtn.style.display = "block";
                 // nextBtn.style.display = 'none';
             });
         }
