@@ -135,7 +135,7 @@
         }
 
         function clearLocalStorage(){
-            console.log("clearLocalStorage");
+            // console.log("clearLocalStorage");
             localStorage.clear();
             localStorage.setItem("version", version);
             localStorage.setItem("language", language);
@@ -168,7 +168,7 @@
 
 
                 if(localStorage.getItem("randomize-question-order") != data["randomize-question-order"]){ // this is dangeruse becasue if I dont save it to local storage it will infinite loop.
-                    console.log("randomize-question-order changed", localStorage.getItem("randomize-question-order"), data["randomize-question-order"]);
+                    // console.log("randomize-question-order changed", localStorage.getItem("randomize-question-order"), data["randomize-question-order"]);
                     clearLocalStorage();
                     init();
     
@@ -391,9 +391,12 @@
             document.body.appendChild(dummyInput);
             dummyInput.addEventListener("input", (e) => {
                 onInput(e);
-                if (dummyInput.value.length == 0) {
-                    dummyInput.value = " ";
-                }
+                
+                dummyInput.value = " ";
+
+                // if (dummyInput.value.length === 0) {
+                    // dummyInput.value = " ";
+                // }
             });
             document.addEventListener("keydown", (e) => {
                 //enter
@@ -557,6 +560,8 @@
             } else {
                 // console.log('event', event);
                 const eventData = event.data || "";
+
+
                 const eventIsLetter = eventData.match(/[a-zA-ZäöüÄÖÜß]/i);
                 // console.log('eventIsLetter', eventIsLetter);
                 if (eventIsLetter) {
@@ -565,7 +570,12 @@
                         // console.log('currentBlockIndex', currentBlockIndex);
                         const currentBlockFound = blocksArray[currentBlockIndex];
                         // console.log('currentBlockFound', currentBlockFound);
-                        currentBlockFound.textContent = eventData;
+
+                        // console.log("eventData", eventData);
+
+                        const lastChar = eventData[eventData.length - 1];
+
+                        currentBlockFound.textContent = lastChar;
                         currentBlockFound.classList.remove("currentBlock");
                         if (currentBlockIndex + 1 < blocksArray.length) {
                             currentBlockIndex++;
@@ -721,12 +731,12 @@
             const alreadyHadThisQuesionCorrect = questionsAnsweredCorrect[index];
 
 
-            console.log("currentQuestionIndex", currentQuestionIndex, "questions.length", questions.length);
+            // console.log("currentQuestionIndex", currentQuestionIndex, "questions.length", questions.length);
             if (alreadyHadThisQuesionCorrect) {
 
                 if(currentQuestionIndex >= questions.length - 1){
                     showFinishButton();
-                    console.log("showFinishButton");
+                    // console.log("showFinishButton");
                     checkBtn.style.display = "none";
                 
                 }else{
